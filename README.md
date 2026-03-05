@@ -223,7 +223,7 @@ clara-answers-pipeline/
 ### Step 1 — Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/clara-answers-pipeline.git
+git clone https://github.comJaswanth5464/clara-answers-pipeline.git
 cd clara-answers-pipeline
 ```
 
