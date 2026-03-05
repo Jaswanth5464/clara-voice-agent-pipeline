@@ -46,14 +46,14 @@ https://drive.google.com/file/d/1ScQcM9VPlkAut_LGgtUtQH6WcKYyds8N/view?usp=shari
 
 ---
 
-### 4. n8n Pipeline A — Full Canvas
+### 4. n8n Pipeline A 
 
 <img width="1298" height="478" alt="image" src="https://github.com/user-attachments/assets/7d0c1726-2d54-4b04-aa7c-1901617282f3" />
 
 
 ---
 
-### 5. n8n Pipeline B — Full Canvas
+### 5. n8n Pipeline B 
 
 <img width="1255" height="410" alt="image" src="https://github.com/user-attachments/assets/77b40d22-c406-457e-b93b-dd5ca7ab2699" />
 
