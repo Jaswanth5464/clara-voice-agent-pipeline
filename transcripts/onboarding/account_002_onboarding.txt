@@ -1,0 +1,21 @@
+﻿Onboarding Call Transcript — BlueLine Sprinklers
+
+Rep: Let's confirm your business details. What are your exact hours?
+
+Client: Monday to Friday, 7am to 6pm Central Time.
+
+Rep: Who handles emergency calls?
+
+Client: Primary is Dave Wilson at 555-0301. Backup is Sarah Lee at 555-0302.
+
+Rep: Transfer timeout?
+
+Client: 45 seconds then try backup.
+
+Rep: Any ServiceTrade rules?
+
+Client: All sprinkler jobs must be logged in ServiceTrade immediately.
+
+Rep: Office address?
+
+Client: 88 Water Street, Chicago IL 60601.

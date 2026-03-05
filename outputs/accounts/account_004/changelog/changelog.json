@@ -1,0 +1,130 @@
+{
+  "from_version": "v1",
+  "to_version": "v2",
+  "source_of_update": "onboarding_call",
+  "summary": "Updated company name, confirmed and detailed business hours including days, start, end, and timezone. The full office address has been captured. Emergency routing rules including primary/fallback contacts and transfer timeout have been confirmed and populated. An integration constraint for ServiceTrade has been added.",
+  "changes": [
+    {
+      "field": "company_name",
+      "change_type": "UPDATED",
+      "before": "Arctic HVAC",
+      "after": "Arctic HVAC Services",
+      "reason": "Explicitly stated in the onboarding call transcript header."
+    },
+    {
+      "field": "business_hours.confirmed",
+      "change_type": "CONFIRMED",
+      "before": false,
+      "after": true,
+      "reason": "Business hours explicitly confirmed in onboarding call."
+    },
+    {
+      "field": "business_hours.days",
+      "change_type": "UPDATED",
+      "before": null,
+      "after": "Monday to Friday, Saturday",
+      "reason": "Explicitly stated in onboarding call: 'Monday to Friday... Saturday...'"
+    },
+    {
+      "field": "business_hours.start",
+      "change_type": "UPDATED",
+      "before": null,
+      "after": "8am",
+      "reason": "Explicitly stated in onboarding call for Monday-Friday hours."
+    },
+    {
+      "field": "business_hours.end",
+      "change_type": "UPDATED",
+      "before": null,
+      "after": "6pm",
+      "reason": "Explicitly stated in onboarding call for Monday-Friday hours."
+    },
+    {
+      "field": "business_hours.timezone",
+      "change_type": "UPDATED",
+      "before": null,
+      "after": "Central Time",
+      "reason": "Explicitly stated in onboarding call."
+    },
+    {
+      "field": "office_address",
+      "change_type": "UPDATED",
+      "before": "Dallas, Texas",
+      "after": "789 Cooling Blvd, Dallas TX 75201",
+      "reason": "Explicitly stated in onboarding call."
+    },
+    {
+      "field": "emergency_routing_rules.confirmed",
+      "change_type": "CONFIRMED",
+      "before": false,
+      "after": true,
+      "reason": "Emergency contacts and transfer timeout were discussed and confirmed."
+    },
+    {
+      "field": "emergency_routing_rules.primary_contact.name",
+      "change_type": "UPDATED",
+      "before": null,
+      "after": "Tom Brady",
+      "reason": "Explicitly stated in onboarding call."
+    },
+    {
+      "field": "emergency_routing_rules.primary_contact.phone",
+      "change_type": "UPDATED",
+      "before": null,
+      "after": "555-0401",
+      "reason": "Explicitly stated in onboarding call."
+    },
+    {
+      "field": "emergency_routing_rules.fallback_contact.name",
+      "change_type": "UPDATED",
+      "before": null,
+      "after": "Lisa Park",
+      "reason": "Explicitly stated in onboarding call."
+    },
+    {
+      "field": "emergency_routing_rules.fallback_contact.phone",
+      "change_type": "UPDATED",
+      "before": null,
+      "after": "555-0402",
+      "reason": "Explicitly stated in onboarding call."
+    },
+    {
+      "field": "emergency_routing_rules.transfer_timeout_seconds",
+      "change_type": "UPDATED",
+      "before": null,
+      "after": 30,
+      "reason": "Explicitly stated in onboarding call: '30 seconds then try backup.'"
+    },
+    {
+      "field": "integration_constraints",
+      "change_type": "ADDED",
+      "before": [],
+      "after": [
+        "Emergency HVAC calls must be flagged as priority in ServiceTrade"
+      ],
+      "reason": "Explicitly stated in onboarding call: 'Emergency HVAC calls must be flagged as priority in ServiceTrade.'"
+    }
+  ],
+  "resolved_unknowns": [
+    "business_hours.days",
+    "business_hours.start",
+    "business_hours.end",
+    "business_hours.timezone",
+    "emergency_routing_rules.primary_contact.name",
+    "emergency_routing_rules.primary_contact.phone",
+    "emergency_routing_rules.fallback_contact.name",
+    "emergency_routing_rules.fallback_contact.phone",
+    "emergency_routing_rules.transfer_timeout_seconds",
+    "integration_constraints"
+  ],
+  "remaining_unknowns": [
+    "non_emergency_routing_rules.during_hours",
+    "call_transfer_rules.timeout_seconds",
+    "call_transfer_rules.retry_attempts",
+    "call_transfer_rules.on_transfer_fail",
+    "emergency_routing_rules.primary_contact.role",
+    "How to represent Saturday business hours (9am-2pm) within the single start/end fields, given current representation is Monday-Friday (8am-6pm)?"
+  ],
+  "account_id": "account_004",
+  "generated_at": "2026-03-05T02:49:27.838482Z"
+}

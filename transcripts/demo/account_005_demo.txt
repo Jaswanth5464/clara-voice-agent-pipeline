@@ -1,0 +1,17 @@
+﻿Demo Call Transcript — Summit Facility Management
+
+Sales Rep: Tell me about your business.
+
+Client: We are Summit Facility Management in New York. We manage maintenance for large commercial buildings including electrical, plumbing, HVAC.
+
+Sales Rep: Pain points?
+
+Client: We handle multiple types of emergencies. Floods, power failures, elevator issues. Very complex routing.
+
+Sales Rep: What counts as emergency?
+
+Client: Flooding, power failures, elevator breakdowns, fire suppression issues.
+
+Sales Rep: Non emergency?
+
+Client: Routine maintenance, inspections, tenant requests. Normal business hours stuff.

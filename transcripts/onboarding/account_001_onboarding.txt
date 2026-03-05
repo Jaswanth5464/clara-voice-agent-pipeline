@@ -1,0 +1,27 @@
+Onboarding Call Transcript — Apex Fire Protection
+
+Onboarding Rep: Hi! Let's get Clara fully configured for your business. Can you confirm your exact business hours?
+
+Client: Sure. We are open Monday to Friday, 8am to 5pm Eastern Time.
+
+Onboarding Rep: Perfect. And who should Clara contact for emergencies?
+
+Client: Primary contact is John Martinez, his number is 555-0101. If he doesn't answer try Mike Chen at 555-0202.
+
+Onboarding Rep: How long should Clara wait before trying the fallback?
+
+Client: Give it 60 seconds then try Mike.
+
+Onboarding Rep: What counts as an emergency for your business?
+
+Client: Sprinkler leaks, fire alarms going off, suppression system failures and smoke detected in the building.
+
+Onboarding Rep: Any rules about ServiceTrade?
+
+Client: Yes — never create sprinkler jobs in ServiceTrade without getting verbal approval from the technician first.
+
+Onboarding Rep: What is your office address?
+
+Client: 142 Industrial Blvd, Newark, NJ 07102.
+
+Onboarding Rep: Perfect. That covers everything!

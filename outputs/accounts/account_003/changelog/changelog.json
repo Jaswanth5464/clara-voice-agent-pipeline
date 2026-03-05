@@ -1,0 +1,129 @@
+{
+  "from_version": "v1",
+  "to_version": "v2",
+  "source_of_update": "onboarding_call",
+  "summary": "Updated business hours, office address, emergency primary contact, general call transfer timeout, and integration constraints based on the onboarding call. Confirmed no emergency fallback contact.",
+  "changes": [
+    {
+      "field": "business_hours.confirmed",
+      "change_type": "CONFIRMED",
+      "before": false,
+      "after": true,
+      "reason": "Business hours were confirmed during the onboarding call."
+    },
+    {
+      "field": "business_hours.days",
+      "change_type": "ADDED",
+      "before": null,
+      "after": "Monday to Saturday",
+      "reason": "Business days were provided during the onboarding call."
+    },
+    {
+      "field": "business_hours.start",
+      "change_type": "ADDED",
+      "before": null,
+      "after": "8am",
+      "reason": "Business start time was provided during the onboarding call."
+    },
+    {
+      "field": "business_hours.end",
+      "change_type": "ADDED",
+      "before": null,
+      "after": "8pm",
+      "reason": "Business end time was provided during the onboarding call."
+    },
+    {
+      "field": "business_hours.timezone",
+      "change_type": "ADDED",
+      "before": null,
+      "after": "Pacific Time",
+      "reason": "Business timezone was provided during the onboarding call."
+    },
+    {
+      "field": "office_address",
+      "change_type": "ADDED",
+      "before": null,
+      "after": "456 Volt Avenue, Los Angeles CA 90001",
+      "reason": "Office address was provided during the onboarding call."
+    },
+    {
+      "field": "emergency_routing_rules.confirmed",
+      "change_type": "CONFIRMED",
+      "before": false,
+      "after": true,
+      "reason": "Emergency primary contact information was provided."
+    },
+    {
+      "field": "emergency_routing_rules.primary_contact.name",
+      "change_type": "ADDED",
+      "before": null,
+      "after": "Sarah Kim",
+      "reason": "Primary emergency contact name was provided during the onboarding call."
+    },
+    {
+      "field": "emergency_routing_rules.primary_contact.phone",
+      "change_type": "ADDED",
+      "before": null,
+      "after": "555-0303",
+      "reason": "Primary emergency contact phone was provided during the onboarding call."
+    },
+    {
+      "field": "emergency_routing_rules.fallback_contact.name",
+      "change_type": "UPDATED",
+      "before": null,
+      "after": null,
+      "reason": "Client explicitly stated 'No backup contact at this time.', confirming absence."
+    },
+    {
+      "field": "emergency_routing_rules.fallback_contact.phone",
+      "change_type": "UPDATED",
+      "before": null,
+      "after": null,
+      "reason": "Client explicitly stated 'No backup contact at this time.', confirming absence."
+    },
+    {
+      "field": "call_transfer_rules.timeout_seconds",
+      "change_type": "ADDED",
+      "before": null,
+      "after": 60,
+      "reason": "General transfer timeout was provided during the onboarding call."
+    },
+    {
+      "field": "integration_constraints",
+      "change_type": "ADDED",
+      "before": [],
+      "after": [
+        "Does not use ServiceTrade",
+        "Uses internal system"
+      ],
+      "reason": "Integration preferences were provided during the onboarding call."
+    }
+  ],
+  "resolved_unknowns": [
+    "business_hours.confirmed",
+    "business_hours.days",
+    "business_hours.start",
+    "business_hours.end",
+    "business_hours.timezone",
+    "office_address",
+    "emergency_routing_rules.confirmed",
+    "emergency_routing_rules.primary_contact.name",
+    "emergency_routing_rules.primary_contact.phone",
+    "emergency_routing_rules.fallback_contact.name",
+    "emergency_routing_rules.fallback_contact.phone",
+    "call_transfer_rules.timeout_seconds",
+    "integration_constraints"
+  ],
+  "remaining_unknowns": [
+    "emergency_routing_rules.transfer_timeout_seconds",
+    "non_emergency_routing_rules.during_hours",
+    "non_emergency_routing_rules.after_hours",
+    "call_transfer_rules.retry_attempts",
+    "call_transfer_rules.on_transfer_fail",
+    "after_hours_flow_summary",
+    "office_hours_flow_summary",
+    "notes"
+  ],
+  "account_id": "account_003",
+  "generated_at": "2026-03-05T02:48:36.845840Z"
+}

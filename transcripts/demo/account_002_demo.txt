@@ -1,0 +1,21 @@
+﻿Demo Call Transcript — BlueLine Sprinklers
+
+Sales Rep: Hi! Tell me about your business.
+
+Client: We are BlueLine Sprinklers based in Chicago. We install and maintain sprinkler systems for commercial buildings.
+
+Sales Rep: What are your main pain points?
+
+Client: We get a lot of after hours calls about sprinkler issues. Sometimes pipes burst at night and nobody answers.
+
+Sales Rep: What counts as an emergency for you?
+
+Client: Burst pipes, sprinkler head failures, water pressure loss in the system.
+
+Sales Rep: Do you use any software?
+
+Client: Yes we use ServiceTrade for all our jobs.
+
+Sales Rep: What about non emergency calls?
+
+Client: Inspection scheduling, maintenance requests, those can wait till next day.

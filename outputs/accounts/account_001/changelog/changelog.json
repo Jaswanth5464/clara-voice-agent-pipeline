@@ -1,0 +1,80 @@
+{
+  "account_id": "account_001",
+  "from_version": "v1",
+  "to_version": "v2",
+  "source_of_update": "onboarding_call",
+  "summary": "Updated business hours, office address, expanded emergency definitions, defined emergency routing contacts and timeout, and specified a new ServiceTrade integration constraint based on the onboarding call.",
+  "changes": [
+    {
+      "field": "business_hours",
+      "change_type": "CONFIRMED",
+      "before": null,
+      "after": {
+        "confirmed": true,
+        "days": "Monday to Friday",
+        "start": "8am",
+        "end": "5pm",
+        "timezone": "Eastern Time"
+      },
+      "reason": "Client confirmed exact business hours during the onboarding call."
+    },
+    {
+      "field": "office_address",
+      "change_type": "UPDATED",
+      "before": "Newark New Jersey",
+      "after": "142 Industrial Blvd, Newark, NJ 07102",
+      "reason": "Client provided full office address details."
+    },
+    {
+      "field": "emergency_definition",
+      "change_type": "UPDATED",
+      "before": [
+        "sprinkler leaks",
+        "fire alarms going off"
+      ],
+      "after": [
+        "sprinkler leaks",
+        "fire alarms going off",
+        "suppression system failures",
+        "smoke detected in the building"
+      ],
+      "reason": "Client expanded the definition of emergencies."
+    },
+    {
+      "field": "emergency_routing_rules",
+      "change_type": "UPDATED",
+      "before": "on-call technician",
+      "after": {
+        "confirmed": true,
+        "primary_contact": {
+          "name": "John Martinez",
+          "phone": "555-0101",
+          "role": ""
+        },
+        "fallback_contact": {
+          "name": "Mike Chen",
+          "phone": "555-0202",
+          "role": ""
+        },
+        "transfer_timeout_seconds": 60
+      },
+      "reason": "Client provided specific primary and fallback contacts and transfer timeout for emergencies, updating from a general mention of 'on-call technician'."
+    },
+    {
+      "field": "integration_constraints",
+      "change_type": "UPDATED",
+      "before": "ServiceTrade",
+      "after": [
+        "never create sprinkler jobs in ServiceTrade without getting verbal approval from the technician first."
+      ],
+      "reason": "Client provided a specific constraint regarding ServiceTrade job creation for sprinklers, updating from a general mention of 'ServiceTrade'."
+    }
+  ],
+  "resolved_unknowns": [
+    "business_hours"
+  ],
+  "remaining_unknowns": [
+    "office_hours_flow_summary"
+  ],
+  "generated_at": "2026-03-05T01:34:32.117Z"
+}

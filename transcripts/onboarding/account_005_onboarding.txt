@@ -1,0 +1,21 @@
+﻿Onboarding Call Transcript — Summit Facility Management
+
+Rep: Confirm business hours.
+
+Client: Monday to Friday 9am to 6pm Eastern Time.
+
+Rep: Emergency contacts?
+
+Client: Primary is James Wilson at 555-0501. Backup is Amy Chen at 555-0502.
+
+Rep: Transfer timeout?
+
+Client: 45 seconds.
+
+Rep: Office address?
+
+Client: 100 Summit Plaza, New York NY 10001.
+
+Rep: Software rules?
+
+Client: We use ServiceTrade. Never create jobs without manager approval. Always log emergency calls with full address.

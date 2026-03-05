@@ -1,0 +1,272 @@
+{
+  "name": "Clara — Pipeline A — Demo Call",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e85cfccc-2b5d-4c2b-a00c-30f32a576432",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fileSelector": "C:\\Users\\kanam\\.n8n-files\\transcripts\\demo\\account_001_demo.txt",
+        "options": {
+          "dataPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        16
+      ],
+      "id": "a02e7468-551c-47e5-8d4c-aa195894a7a2",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a data extraction assistant for Clara Answers.\n\nExtract structured information from this demo call transcript and return ONLY a valid JSON object.\n\nFill these fields:\n- company_name\n- services_supported (list)\n- emergency_definition (list of what counts as emergency)\n- emergency_routing_rules (who to call, any names or numbers mentioned)\n- non_emergency_routing_rules\n- business_hours (days, start time, end time, timezone)\n- office_address\n- integration_constraints (any software like ServiceTrade mentioned)\n- after_hours_flow_summary\n- office_hours_flow_summary\n- questions_or_unknowns (list every field that was NOT mentioned in transcript)\n- notes (1-2 lines summary)\n\nSTRICT RULES:\n- Only extract what is EXPLICITLY stated\n- Never invent or guess missing information\n- If something is not mentioned → put null\n- Add every missing field to questions_or_unknowns\n- Return ONLY the JSON, no extra text\n\nTRANSCRIPT:\n{{ $json.data }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        16
+      ],
+      "id": "38bd8828-036b-4a86-859e-9a86550347b2",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "HqVZMHwLvqGPNMoJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        16
+      ],
+      "id": "be2fb205-941c-4c33-88fe-89d8eaa6e954",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get Gemini's response text\nconst geminiResponse = $input.first().json.content.parts[0].text;\n\n// Clean it up — remove markdown backticks if any\nconst cleaned = geminiResponse\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\n// Parse it into proper JSON\nlet memo = JSON.parse(cleaned);\n\n// Add extra fields\nmemo.account_id = \"account_001\";\nmemo.version = \"v1\";\nmemo.source = \"demo_call\";\nmemo.generated_at = new Date().toISOString();\n\n// Convert to binary so Write File node can save it\nconst binaryData = await this.helpers.prepareBinaryData(\n  Buffer.from(JSON.stringify(memo, null, 2)),\n  'account_memo.json',\n  'application/json'\n);\n\nreturn {\n  json: memo,\n  binary: {\n    data: binaryData\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        16
+      ],
+      "id": "d1a38f31-692a-4af5-99a8-2e0cd66dcebe",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "C:\\Users\\kanam\\.n8n-files\\outputs\\accounts\\account_001\\v1\\account_memo.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1184,
+        16
+      ],
+      "id": "35ee34b8-0a73-4af6-8504-c8920843b1fa",
+      "name": "Read/Write Files from Disk1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are Clara, an AI voice agent configuration specialist.\n\nBased on the following account memo JSON, generate a professional \nvoice agent script for Clara.\n\nThe script MUST include:\n\nBUSINESS HOURS FLOW:\n1. Greeting\n2. Ask purpose of call\n3. Collect caller name and phone number\n4. Transfer to appropriate person\n5. If transfer fails: apologize and assure callback\n6. Ask if they need anything else\n7. Close call politely\n\nAFTER HOURS FLOW:\n1. Greeting mentioning closed\n2. Ask purpose of call\n3. Ask if this is an emergency\n4. IF EMERGENCY:\n   - Collect name, phone number, address immediately\n   - Attempt transfer to on-call technician\n   - If transfer fails: apologize and assure urgent callback\n5. IF NOT EMERGENCY:\n   - Collect name and phone number\n   - Confirm callback next business day\n6. Ask if they need anything else\n7. Close call politely\n\nSTRICT RULES:\n- Never mention function calls or tools to caller\n- Never mention you are an AI unless directly asked\n- Never invent contact details not in the memo\n- Keep responses short and natural\n- Sound warm, calm and professional\n\nReturn ONLY a valid JSON object with these fields:\n{\n  \"agent_name\": \"\",\n  \"version\": \"v1\",\n  \"account_id\": \"\",\n  \"voice_style\": {\n    \"tone\": \"\",\n    \"pace\": \"\",\n    \"personality\": \"\"\n  },\n  \"key_variables\": {\n    \"company_name\": \"\",\n    \"business_hours\": \"\",\n    \"timezone\": \"\",\n    \"emergency_contact_primary\": \"\",\n    \"emergency_contact_fallback\": \"\",\n    \"office_address\": \"\"\n  },\n  \"system_prompt\": \"\",\n  \"call_transfer_protocol\": {\n    \"method\": \"\",\n    \"timeout_seconds\": \"\",\n    \"announce_to_agent\": \"\",\n    \"on_fail\": \"\"\n  },\n  \"fallback_protocol\": {\n    \"message\": \"\",\n    \"log_callback\": true,\n    \"escalate_if_emergency\": true\n  }\n}\n\nACCOUNT MEMO:\n{{ $('Code in JavaScript').item.json | stringify }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1392,
+        16
+      ],
+      "id": "804b4e76-0df0-4b40-9ea4-27fda17dfd1e",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "HqVZMHwLvqGPNMoJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get Gemini's agent spec response\nconst geminiResponse = $input.first().json.content.parts[0].text;\n\n// Clean markdown if any\nconst cleaned = geminiResponse\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\n// Parse JSON\nlet agentSpec = JSON.parse(cleaned);\n\n// Add metadata\nagentSpec.account_id = \"account_001\";\nagentSpec.version = \"v1\";\nagentSpec.generated_at = new Date().toISOString();\n\n// Convert to binary for saving\nconst binaryData = await this.helpers.prepareBinaryData(\n  Buffer.from(JSON.stringify(agentSpec, null, 2)),\n  'agent_spec.json',\n  'application/json'\n);\n\nreturn {\n  json: agentSpec,\n  binary: {\n    data: binaryData\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        16
+      ],
+      "id": "a2679bfc-0f87-4ce1-a4ec-a0312fe01901",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "C:\\Users\\kanam\\.n8n-files\\outputs\\accounts\\account_001\\v1\\agent_spec.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1952,
+        16
+      ],
+      "id": "c8e47b36-896e-43ed-a6ba-6040c7f2c149",
+      "name": "Read/Write Files from Disk2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk1": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "8bf35ddd-6b18-4c2d-922f-4bb512cc9682",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bd364f7974a35e6c4aae013731a4bedc6ba6fea18d7e881c15631e509816e00c"
+  },
+  "id": "nXVltW1a9cPYCVDqmpX5G",
+  "tags": []
+}

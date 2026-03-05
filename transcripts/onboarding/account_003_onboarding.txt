@@ -1,0 +1,21 @@
+﻿Onboarding Call Transcript — Voltex Electrical
+
+Rep: Confirm your business hours please.
+
+Client: Monday to Saturday, 8am to 8pm Pacific Time.
+
+Rep: Emergency contacts?
+
+Client: Primary is Sarah Kim at 555-0303. No backup contact at this time.
+
+Rep: Transfer timeout?
+
+Client: 60 seconds.
+
+Rep: Office address?
+
+Client: 456 Volt Avenue, Los Angeles CA 90001.
+
+Rep: Any integration rules?
+
+Client: We dont use ServiceTrade. We use our own internal system.

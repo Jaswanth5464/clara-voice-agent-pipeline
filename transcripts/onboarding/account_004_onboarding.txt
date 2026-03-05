@@ -1,0 +1,21 @@
+﻿Onboarding Call Transcript — Arctic HVAC Services
+
+Rep: Confirm business hours.
+
+Client: Monday to Friday 8am to 6pm Central Time. Saturday 9am to 2pm.
+
+Rep: Emergency contacts?
+
+Client: Primary is Tom Brady at 555-0401. Backup is Lisa Park at 555-0402.
+
+Rep: Transfer timeout?
+
+Client: 30 seconds then try backup.
+
+Rep: Office address?
+
+Client: 789 Cooling Blvd, Dallas TX 75201.
+
+Rep: Any software rules?
+
+Client: We use ServiceTrade. Emergency HVAC calls must be flagged as priority in ServiceTrade.

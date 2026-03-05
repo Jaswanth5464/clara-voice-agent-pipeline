@@ -1,0 +1,260 @@
+{
+  "name": "Clara — Pipeline B — Onboarding",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5e6cbbe8-e649-4d46-9855-30902d00ea0b",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fileSelector": "C:\\Users\\kanam\\.n8n-files\\transcripts\\onboarding\\account_001_onboarding.txt",
+        "options": {
+          "dataPropertyName": "onboarding"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "30c33d42-b726-48ec-a886-d08d4030165c",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "binaryPropertyName": "onboarding",
+        "destinationKey": "onboarding",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "17dcb57e-eb75-469b-a4a4-b3c840021f60",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a data extraction specialist for Clara Answers.\n\nYou will receive:\n1. An onboarding call transcript\n2. An existing v1 account memo JSON\n\nYour job:\n- Read the onboarding transcript carefully\n- Compare it with the v1 memo\n- Generate complete updated v2 memo\n- Generate detailed changelog showing exactly what changed\n\nReturn ONLY a valid JSON object with this exact structure:\n{\n  \"v2_memo\": {\n    \"account_id\": \"account_001\",\n    \"company_name\": \"\",\n    \"version\": \"v2\",\n    \"source\": \"onboarding_call\",\n    \"business_hours\": {\n      \"confirmed\": true,\n      \"days\": \"\",\n      \"start\": \"\",\n      \"end\": \"\",\n      \"timezone\": \"\"\n    },\n    \"office_address\": \"\",\n    \"services_supported\": [],\n    \"emergency_definition\": [],\n    \"emergency_routing_rules\": {\n      \"confirmed\": true,\n      \"primary_contact\": {\n        \"name\": \"\",\n        \"phone\": \"\",\n        \"role\": \"\"\n      },\n      \"fallback_contact\": {\n        \"name\": \"\",\n        \"phone\": \"\",\n        \"role\": \"\"\n      },\n      \"transfer_timeout_seconds\": null\n    },\n    \"non_emergency_routing_rules\": {\n      \"during_hours\": \"\",\n      \"after_hours\": \"\"\n    },\n    \"call_transfer_rules\": {\n      \"timeout_seconds\": null,\n      \"retry_attempts\": null,\n      \"on_transfer_fail\": \"\"\n    },\n    \"integration_constraints\": [],\n    \"after_hours_flow_summary\": \"\",\n    \"office_hours_flow_summary\": \"\",\n    \"questions_or_unknowns\": [],\n    \"notes\": \"\"\n  },\n  \"changelog\": {\n    \"account_id\": \"account_001\",\n    \"from_version\": \"v1\",\n    \"to_version\": \"v2\",\n    \"source_of_update\": \"onboarding_call\",\n    \"summary\": \"\",\n    \"changes\": [\n      {\n        \"field\": \"\",\n        \"change_type\": \"\",\n        \"before\": \"\",\n        \"after\": \"\",\n        \"reason\": \"\"\n      }\n    ],\n    \"resolved_unknowns\": [],\n    \"remaining_unknowns\": []\n  }\n}\n\nSTRICT RULES:\n- Only use information explicitly stated in transcript\n- Never invent or guess missing information\n- change_type must be one of: CONFIRMED, ADDED, UPDATED\n- Return ONLY the JSON object, no extra text, no markdown\n\nONBOARDING TRANSCRIPT:\n\n{{ $('Extract from File').item.json.onboarding }}\nEXISTING V1 MEMO:\n{{ $json.memo }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "e5d68fa1-1964-4a88-a294-f6c287eda5ef",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "HqVZMHwLvqGPNMoJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileSelector": "C:\\Users\\kanam\\.n8n-files\\outputs\\accounts\\account_001\\v1\\account_memo.json",
+        "options": {
+          "dataPropertyName": "memo"
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "444de3f1-2854-41fb-8059-499f826fec7e",
+      "name": "Read/Write Files from Disk1"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "binaryPropertyName": "memo",
+        "destinationKey": "memo",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        832,
+        0
+      ],
+      "id": "69046be8-880f-4fc5-a483-07a291b8b9ea",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get Gemini response\nconst geminiResponse = $input.first().json.content.parts[0].text;\n\n// Clean markdown\nconst cleaned = geminiResponse\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\n// Parse JSON\nconst result = JSON.parse(cleaned);\n\n// Add timestamps\nresult.v2_memo.generated_at = new Date().toISOString();\nresult.changelog.generated_at = new Date().toISOString();\n\n// Prepare v2 memo binary\nconst v2Binary = await this.helpers.prepareBinaryData(\n  Buffer.from(JSON.stringify(result.v2_memo, null, 2)),\n  'account_memo.json',\n  'application/json'\n);\n\n// Prepare changelog binary\nconst changelogBinary = await this.helpers.prepareBinaryData(\n  Buffer.from(JSON.stringify(result.changelog, null, 2)),\n  'changelog.json',\n  'application/json'\n);\n\nreturn {\n  json: {\n    v2_memo: result.v2_memo,\n    changelog: result.changelog\n  },\n  binary: {\n    v2_memo: v2Binary,\n    changelog: changelogBinary\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        0
+      ],
+      "id": "409c2799-4913-4ee4-b71b-32d1bebeed6b",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "C:\\Users\\kanam\\.n8n-files\\outputs\\accounts\\account_001\\v2\\account_memo.json",
+        "dataPropertyName": "v2_memo",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1600,
+        0
+      ],
+      "id": "49e53ab5-9f1d-485d-a94c-bf42332e88b8",
+      "name": "Read/Write Files from Disk2"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "C:\\Users\\kanam\\.n8n-files\\outputs\\accounts\\account_001\\changelog\\changelog.json",
+        "dataPropertyName": "changelog",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1808,
+        0
+      ],
+      "id": "f7341a90-0320-4d88-84bb-4e58ee2cadb8",
+      "name": "Read/Write Files from Disk3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk2": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "cdc9465e-6bfc-48f7-9689-6ba36d9bbb7b",
+  "meta": {
+    "instanceId": "bd364f7974a35e6c4aae013731a4bedc6ba6fea18d7e881c15631e509816e00c"
+  },
+  "id": "IijQWF3bCN9ldNLIW2TtS",
+  "tags": []
+}

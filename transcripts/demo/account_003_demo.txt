@@ -1,0 +1,17 @@
+﻿Demo Call Transcript — Voltex Electrical
+
+Sales Rep: Tell me about your business.
+
+Client: We are Voltex Electrical in Los Angeles. We handle commercial electrical services, panel upgrades, wiring repairs.
+
+Sales Rep: What are your pain points?
+
+Client: Emergency calls after hours are a nightmare. Power outages, exposed wiring, electrical fires. Customers cant reach us.
+
+Sales Rep: What counts as emergency?
+
+Client: Power outages, exposed wiring, electrical fires, panel failures.
+
+Sales Rep: Non emergency?
+
+Client: Routine inspections, upgrades, new installations. Those can be scheduled.

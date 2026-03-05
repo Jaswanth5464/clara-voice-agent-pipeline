@@ -1,0 +1,33 @@
+{
+  "company_name": "BlueLine Sprinklers",
+  "services_supported": [
+    "install sprinkler systems for commercial buildings",
+    "maintain sprinkler systems for commercial buildings"
+  ],
+  "emergency_definition": [
+    "Burst pipes",
+    "Sprinkler head failures",
+    "Water pressure loss in the system"
+  ],
+  "emergency_routing_rules": null,
+  "non_emergency_routing_rules": "Inspection scheduling and maintenance requests can wait until next day.",
+  "business_hours": null,
+  "office_address": null,
+  "integration_constraints": [
+    "ServiceTrade"
+  ],
+  "after_hours_flow_summary": null,
+  "office_hours_flow_summary": null,
+  "questions_or_unknowns": [
+    "emergency_routing_rules",
+    "business_hours",
+    "office_address",
+    "after_hours_flow_summary",
+    "office_hours_flow_summary"
+  ],
+  "notes": "BlueLine Sprinklers is based in Chicago, specializing in commercial sprinkler systems. They struggle with after-hours emergency calls related to burst pipes and other critical failures, and use ServiceTrade for job management.",
+  "account_id": "account_002",
+  "version": "v1",
+  "source": "demo_call",
+  "generated_at": "2026-03-05T02:05:54.615Z"
+}
