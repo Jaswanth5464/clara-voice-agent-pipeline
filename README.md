@@ -546,7 +546,7 @@ The generated agent prompt follows strict conversation hygiene:
 
 ## 🎥 Demo Video
 
-[Watch the pipeline demo on Loom](https://drive.google.com/file/d/1ScQcM9VPlkAut_LGgtUtQH6WcKYyds8N/view?usp=sharing) ← Add your Loom link here
+[Watch the pipeline demo on Loom](https://drive.google.com/file/d/1ScQcM9VPlkAut_LGgtUtQH6WcKYyds8N/view?usp=sharing) ← 
 
 ---
 
