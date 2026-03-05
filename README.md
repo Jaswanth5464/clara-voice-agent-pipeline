@@ -23,7 +23,6 @@
 ---
 
 ### 2. Dashboard — Pipeline Summary + Open Unknowns
-<img width="470" height="527" alt="image" src="https://github.com/user-attachments/assets/657ee503-5757-430b-973c-61fa3c94e615" />
 
 
 
