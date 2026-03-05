@@ -6,63 +6,86 @@
 
 ## 📸 Screenshots
 
-> 📁 Save all screenshots to `docs/screenshots/` folder in your repo
+
 
 ---
 
 ### 1. Dashboard — Full Overview
-> 💾 Save as: `docs/screenshots/dashboard_overview.png`
-> 📷 Take screenshot of: Dashboard open in browser showing all 5 companies, stats cards at top
 
-![Dashboard Overview](docs/screenshots/dashboard_overview.png)
+<img width="1130" height="592" alt="image" src="https://github.com/user-attachments/assets/d22f29df-5138-4651-80f9-af0121f5bc97" />
+
+
+
+
+
+
 
 ---
 
 ### 2. Dashboard — Pipeline Summary + Open Unknowns
-> 💾 Save as: `docs/screenshots/dashboard_bottom.png`
-> 📷 Take screenshot of: Bottom section of dashboard showing pipeline summary and unknowns list
+<img width="470" height="527" alt="image" src="https://github.com/user-attachments/assets/657ee503-5757-430b-973c-61fa3c94e615" />
 
-![Dashboard Bottom](docs/screenshots/dashboard_bottom.png)
+
+
+
+<img width="526" height="574" alt="image" src="https://github.com/user-attachments/assets/f38ca913-ba9b-4bb1-90d2-ef64e4156334" />
+
+
+<img width="1288" height="565" alt="image" src="https://github.com/user-attachments/assets/35950489-3d9b-45b6-ac6a-aaedea39cec0" />
 
 ---
 
 ### 3. Dashboard — Diff Viewer
-> 💾 Save as: `docs/screenshots/diff_viewer.png`
-> 📷 Take screenshot of: Click "Diff" button on any account → screenshot the popup
 
-![Diff Viewer](docs/screenshots/diff_viewer.png)
+<img width="805" height="517" alt="image" src="https://github.com/user-attachments/assets/95a105f7-d4f4-437f-b3d2-aa41dcab493e" />
 
 ---
 
 ### 4. n8n Pipeline A — Full Canvas
-> 💾 Save as: `docs/screenshots/pipeline_a.png`
-> 📷 Take screenshot of: Pipeline A workflow with all 8 nodes visible
 
-![Pipeline A](docs/screenshots/pipeline_a.png)
+<img width="1298" height="478" alt="image" src="https://github.com/user-attachments/assets/7d0c1726-2d54-4b04-aa7c-1901617282f3" />
+
 
 ---
 
 ### 5. n8n Pipeline B — Full Canvas
-> 💾 Save as: `docs/screenshots/pipeline_b.png`
-> 📷 Take screenshot of: Pipeline B workflow with all 9 nodes visible
 
-![Pipeline B](docs/screenshots/pipeline_b.png)
+<img width="1255" height="410" alt="image" src="https://github.com/user-attachments/assets/77b40d22-c406-457e-b93b-dd5ca7ab2699" />
 
 ---
 
 ### 6. Batch Runner — Terminal Output
-> 💾 Save as: `docs/screenshots/batch_run.png`
-> 📷 Take screenshot of: PowerShell showing BATCH RUN SUMMARY with all 5 ✅ Done
 
-![Batch Run](docs/screenshots/batch_run.png)
+
+<img width="790" height="462" alt="image" src="https://github.com/user-attachments/assets/a1aa482a-bc5e-4050-855f-56958e2d96cf" />
+
+
+<img width="794" height="403" alt="image" src="https://github.com/user-attachments/assets/faf85c96-97a3-4711-bac5-fc5bdff42016" />
+
 
 ---
 
 ### 7. Output Folder Structure
-> 💾 Save as: `docs/screenshots/folder_structure.png`
-> 📷 Take screenshot of: File Explorer showing outputs/accounts with all 5 folders + v1, v2, changelog inside
 
-![Folder Structure](docs/screenshots/folder_structure.png)
+<img width="896" height="377" alt="image" src="https://github.com/user-attachments/assets/5248ebcf-5982-4a71-9dc7-0dd9091b3cf1" />
+
+
+
+
+<img width="947" height="344" alt="image" src="https://github.com/user-attachments/assets/06e58b0b-d187-4ef4-aed9-96ac7bbff592" />
+
+
+
+
+<img width="827" height="345" alt="image" src="https://github.com/user-attachments/assets/069e3960-49ed-4a00-838b-8e9b5f6f9160" />
+
+
+
+
+
+<img width="1055" height="300" alt="image" src="https://github.com/user-attachments/assets/07565c69-fc5e-4cce-8404-058a94b7b8cd" />
+
+
 
 ---
 
