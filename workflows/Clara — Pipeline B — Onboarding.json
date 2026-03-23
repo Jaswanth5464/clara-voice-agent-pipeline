@@ -72,8 +72,8 @@
       "name": "Message a model",
       "credentials": {
         "googlePalmApi": {
-          "id": "HqVZMHwLvqGPNMoJ",
-          "name": "Google Gemini(PaLM) Api account"
+          "id": "U30wZh9zDlZQQ0eN",
+          "name": "Google Gemini(PaLM) Api account 2"
         }
       }
     },
@@ -153,6 +153,108 @@
       ],
       "id": "f7341a90-0320-4d88-84bb-4e58ee2cadb8",
       "name": "Read/Write Files from Disk3"
+    },
+    {
+      "parameters": {
+        "fileSelector": "C:\\Users\\kanam\\.n8n-files\\outputs\\accounts\\account_001\\v1\\agent_memo.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        2016,
+        0
+      ],
+      "id": "86e0195f-b2e4-4b0f-a493-9eb3bfe38675",
+      "name": "Read/Write Files from Disk4"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://api.retellai.com/update-retell-llm/{{ $json.memo.llm_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer key_fa2c6aedb6aa5ab6df9d7ee627ec"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2464,
+        16
+      ],
+      "id": "8f473440-8af1-40eb-a48b-400bfb6b01cd",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "destinationKey": "memo",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        2224,
+        0
+      ],
+      "id": "f747b2dd-4986-46ed-a93f-442dd7b58679",
+      "name": "Extract from File2"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://api.retellai.com/update-agent/{{ $('Extract from File2').item.json.memo.agent_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer key_fa2c6aedb6aa5ab6df9d7ee627ec"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{$json}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2960,
+        16
+      ],
+      "id": "3d6bb02c-4d72-486b-9178-14d60dea08ed",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    response_engine: {\n      type: \"retell-llm\",\n      llm_id: $node[\"Extract from File2\"].json.memo.llm_id\n    },\n    general_prompt: $node[\"Extract from File2\"].json.memo.system_prompt\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2672,
+        16
+      ],
+      "id": "97f94aef-287d-42c0-ae39-499d6eb37005",
+      "name": "Code in JavaScript1"
     }
   ],
   "pinData": {},
@@ -244,6 +346,61 @@
           }
         ]
       ]
+    },
+    "Read/Write Files from Disk3": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk4": {
+      "main": [
+        [
+          {
+            "node": "Extract from File2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -251,7 +408,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "cdc9465e-6bfc-48f7-9689-6ba36d9bbb7b",
+  "versionId": "e131e5eb-73df-4907-91d8-d5cbb5f12f69",
   "meta": {
     "instanceId": "bd364f7974a35e6c4aae013731a4bedc6ba6fea18d7e881c15631e509816e00c"
   },
