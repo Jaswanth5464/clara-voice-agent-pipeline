@@ -57,8 +57,8 @@
       "name": "Message a model",
       "credentials": {
         "googlePalmApi": {
-          "id": "HqVZMHwLvqGPNMoJ",
-          "name": "Google Gemini(PaLM) Api account"
+          "id": "U30wZh9zDlZQQ0eN",
+          "name": "Google Gemini(PaLM) Api account 2"
         }
       }
     },
@@ -115,7 +115,7 @@
         "messages": {
           "values": [
             {
-              "content": "=You are Clara, an AI voice agent configuration specialist.\n\nBased on the following account memo JSON, generate a professional \nvoice agent script for Clara.\n\nThe script MUST include:\n\nBUSINESS HOURS FLOW:\n1. Greeting\n2. Ask purpose of call\n3. Collect caller name and phone number\n4. Transfer to appropriate person\n5. If transfer fails: apologize and assure callback\n6. Ask if they need anything else\n7. Close call politely\n\nAFTER HOURS FLOW:\n1. Greeting mentioning closed\n2. Ask purpose of call\n3. Ask if this is an emergency\n4. IF EMERGENCY:\n   - Collect name, phone number, address immediately\n   - Attempt transfer to on-call technician\n   - If transfer fails: apologize and assure urgent callback\n5. IF NOT EMERGENCY:\n   - Collect name and phone number\n   - Confirm callback next business day\n6. Ask if they need anything else\n7. Close call politely\n\nSTRICT RULES:\n- Never mention function calls or tools to caller\n- Never mention you are an AI unless directly asked\n- Never invent contact details not in the memo\n- Keep responses short and natural\n- Sound warm, calm and professional\n\nReturn ONLY a valid JSON object with these fields:\n{\n  \"agent_name\": \"\",\n  \"version\": \"v1\",\n  \"account_id\": \"\",\n  \"voice_style\": {\n    \"tone\": \"\",\n    \"pace\": \"\",\n    \"personality\": \"\"\n  },\n  \"key_variables\": {\n    \"company_name\": \"\",\n    \"business_hours\": \"\",\n    \"timezone\": \"\",\n    \"emergency_contact_primary\": \"\",\n    \"emergency_contact_fallback\": \"\",\n    \"office_address\": \"\"\n  },\n  \"system_prompt\": \"\",\n  \"call_transfer_protocol\": {\n    \"method\": \"\",\n    \"timeout_seconds\": \"\",\n    \"announce_to_agent\": \"\",\n    \"on_fail\": \"\"\n  },\n  \"fallback_protocol\": {\n    \"message\": \"\",\n    \"log_callback\": true,\n    \"escalate_if_emergency\": true\n  }\n}\n\nACCOUNT MEMO:\n{{ $('Code in JavaScript').item.json | stringify }}"
+              "content": "=You are Clara, an AI voice agent configuration specialist.\n\nBased on the following account memo JSON, generate a professional voice agent script for Clara.\n\nIMPORTANT OUTPUT RULES (STRICT):\n- Return ONLY valid JSON\n- Do NOT include markdown (no ```json)\n- Do NOT include explanations\n- Escape all newlines as \\\\n\n- Do NOT use raw line breaks inside strings\n- Use only double quotes\n- Ensure JSON is parseable with JSON.parse()\n\n---\n\nBUSINESS HOURS FLOW:\n1. Greeting\n2. Ask purpose of call\n3. Collect caller name and phone number\n4. Transfer to appropriate person\n5. If transfer fails: apologize and assure callback\n6. Ask if they need anything else\n7. Close call politely\n\nAFTER HOURS FLOW:\n1. Greeting mentioning closed\n2. Ask purpose of call\n3. Ask if this is an emergency\n\nIF EMERGENCY:\n- Collect name, phone number, address immediately\n- Attempt transfer to on-call technician\n- If transfer fails: apologize and assure urgent callback\n\nIF NOT EMERGENCY:\n- Collect name and phone number\n- Confirm callback next business day\n\n6. Ask if they need anything else\n7. Close call politely\n\n---\n\nSTRICT BEHAVIOR RULES:\n- Never mention tools or function calls\n- Never say you are AI unless asked\n- Never invent details not in memo\n- Keep responses short, natural, and human-like\n- Tone: warm, calm, professional\n\n---\n\nRETURN FORMAT (STRICT JSON):\n\n{\n  \"agent_name\": \"Clara\",\n  \"version\": \"v1\",\n  \"account_id\": \"\",\n  \"voice_style\": {\n    \"tone\": \"warm\",\n    \"pace\": \"natural\",\n    \"personality\": \"professional and calm\"\n  },\n  \"key_variables\": {\n    \"company_name\": \"\",\n    \"business_hours\": \"\",\n    \"timezone\": \"\",\n    \"emergency_contact_primary\": \"\",\n    \"emergency_contact_fallback\": \"\",\n    \"office_address\": \"\"\n  },\n  \"system_prompt\": \"FULL SCRIPT HERE WITH \\\\n FOR NEW LINES\",\n  \"call_transfer_protocol\": {\n    \"method\": \"phone_transfer\",\n    \"timeout_seconds\": \"30\",\n    \"announce_to_agent\": \"Incoming call transfer\",\n    \"on_fail\": \"Apologize and assure callback\"\n  },\n  \"fallback_protocol\": {\n    \"message\": \"We will call you back shortly\",\n    \"log_callback\": true,\n    \"escalate_if_emergency\": true\n  }\n}\n\n---\n\nACCOUNT MEMO:\n{{ $('Code in JavaScript').item.json | stringify }}"
             }
           ]
         },
@@ -132,19 +132,19 @@
       "name": "Message a model1",
       "credentials": {
         "googlePalmApi": {
-          "id": "HqVZMHwLvqGPNMoJ",
-          "name": "Google Gemini(PaLM) Api account"
+          "id": "U30wZh9zDlZQQ0eN",
+          "name": "Google Gemini(PaLM) Api account 2"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "// Get Gemini's agent spec response\nconst geminiResponse = $input.first().json.content.parts[0].text;\n\n// Clean markdown if any\nconst cleaned = geminiResponse\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\n// Parse JSON\nlet agentSpec = JSON.parse(cleaned);\n\n// Add metadata\nagentSpec.account_id = \"account_001\";\nagentSpec.version = \"v1\";\nagentSpec.generated_at = new Date().toISOString();\n\n// Convert to binary for saving\nconst binaryData = await this.helpers.prepareBinaryData(\n  Buffer.from(JSON.stringify(agentSpec, null, 2)),\n  'agent_spec.json',\n  'application/json'\n);\n\nreturn {\n  json: agentSpec,\n  binary: {\n    data: binaryData\n  }\n};\n"
+        "jsCode": "// Step 1: Get Gemini response\nconst geminiResponse =\n  $input.first().json.content?.parts?.[0]?.text ||\n  $input.first().json.text ||\n  $input.first().json.content ||\n  \"\";\n\n// Step 2: Remove markdown\nlet cleaned = geminiResponse\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\n// Step 3: Extract JSON only\nconst start = cleaned.indexOf('{');\nconst end = cleaned.lastIndexOf('}');\n\nif (start === -1 || end === -1) {\n  throw new Error(\"❌ No valid JSON found:\\n\" + cleaned);\n}\n\ncleaned = cleaned.substring(start, end + 1);\n\n// ❌ DO NOT TOUCH NEWLINES HERE\n\n// Step 4: Parse directly\nlet agentSpec;\ntry {\n  agentSpec = JSON.parse(cleaned);\n} catch (err) {\n  throw new Error(\"❌ JSON Parse Failed:\\n\" + cleaned);\n}\n\n// Step 5: Add metadata\nagentSpec.account_id = \"account_001\";\nagentSpec.version = \"v1\";\nagentSpec.generated_at = new Date().toISOString();\n\n// Step 6: Return JSON\nreturn [{ json: agentSpec }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1744,
+        1712,
         16
       ],
       "id": "a2679bfc-0f87-4ce1-a4ec-a0312fe01901",
@@ -153,17 +153,115 @@
     {
       "parameters": {
         "operation": "write",
-        "fileName": "C:\\Users\\kanam\\.n8n-files\\outputs\\accounts\\account_001\\v1\\agent_spec.json",
+        "fileName": "C:\\Users\\kanam\\.n8n-files\\outputs\\accounts\\account_001\\v1\\agent_memo.json",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1.1,
       "position": [
-        1952,
-        16
+        2672,
+        48
       ],
       "id": "c8e47b36-896e-43ed-a6ba-6040c7f2c149",
       "name": "Read/Write Files from Disk2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.retellai.com/create-retell-llm",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer key_fa2c6aedb6aa5ab6df9d7ee627ec"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": " model",
+              "value": "gpt-4o-mini"
+            },
+            {
+              "name": "= general_prompt",
+              "value": "={{ $json.system_prompt }}"
+            },
+            {
+              "name": "begin_message",
+              "value": "=Thank you for calling {{ $json.key_variables.company_name }}, how can I help you?"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2016,
+        368
+      ],
+      "id": "0dbd6317-2527-462c-a459-856437243039",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const jsonData = $input.first().json;\n\nconst binaryData = await this.helpers.prepareBinaryData(\n  Buffer.from(JSON.stringify(jsonData, null, 2)),\n  'agent_spec.json',\n  'application/json'\n);\n\nreturn [{\n  json: jsonData, // keep JSON for next nodes\n  binary: {\n    data: binaryData\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1984,
+        -16
+      ],
+      "id": "b52545f9-a505-420c-96c8-1efcf4597996",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.retellai.com/create-agent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer key_fa2c6aedb6aa5ab6df9d7ee627ec"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"agent_name\": \"Clara\",\n  \"response_engine\": {\n    \"type\": \"retell-llm\",\n    \"llm_id\": \"{{ $json.llm_id }}\"\n  },\n  \"voice_id\": \"11labs-Myra\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2256,
+        208
+      ],
+      "id": "c92a049d-c10f-47c2-9e79-8dfe590776d3",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const agentResponse = $input.first().json;\n\n// get original spec\nconst original = $items(\"Code in JavaScript1\")[0].json;\n\n// merge IDs\nconst finalData = {\n  ...original,\n  llm_id: agentResponse.response_engine?.llm_id || agentResponse.llm_id,\n  agent_id: agentResponse.agent_id\n};\n\n// 🔥 convert to binary (important)\nconst binaryData = await this.helpers.prepareBinaryData(\n  Buffer.from(JSON.stringify(finalData, null, 2)),\n  'agent_spec.json',\n  'application/json'\n);\n\nreturn [{\n  json: finalData,\n  binary: {\n    data: binaryData\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2464,
+        208
+      ],
+      "id": "5b5e9791-3c1e-49b3-8334-9c4ab1f498ef",
+      "name": "Code in JavaScript3"
     }
   ],
   "pinData": {},
@@ -249,6 +347,55 @@
       "main": [
         [
           {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk2": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
             "node": "Read/Write Files from Disk2",
             "type": "main",
             "index": 0
@@ -262,7 +409,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "8bf35ddd-6b18-4c2d-922f-4bb512cc9682",
+  "versionId": "8d11bff1-5a43-4997-81fd-5bcce204deb3",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bd364f7974a35e6c4aae013731a4bedc6ba6fea18d7e881c15631e509816e00c"
