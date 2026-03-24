@@ -1,0 +1,366 @@
+{
+  "name": "Clara Phase 4 - Form Merge to V3",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "clara-form-submit",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0695a49f-a677-4dd9-983c-a9fdbaf8d340",
+      "name": "Webhook",
+      "webhookId": "070c6608-3046-406e-9047-e1ace6168588"
+    },
+    {
+      "parameters": {
+        "fileSelector": "C:\\Users\\kanam\\.n8n-files\\data\\agents\\agent_v1.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        112
+      ],
+      "id": "ed6dbd9b-643e-4274-943e-62b2698c7cce",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "destinationKey": "data1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        432,
+        128
+      ],
+      "id": "8d0935c3-5019-42a7-bed7-ead76e5753b2",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nlet text = item.json.data1;\n\nconst outer = JSON.parse(text);\nconst rawText = outer[0].content.parts[0].text;\nconst clean = rawText.replace(/```json|```/g, '').trim();\nconst v2 = JSON.parse(clean);\n\nreturn [{ json: { v2_data: v2 } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        144
+      ],
+      "id": "5c66c008-5769-4506-a612-229a1b2ed03e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        944,
+        -48
+      ],
+      "id": "ba7865b4-6a97-4728-a686-668273de2556",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are merging Clara AI agent config v2 with new onboarding form data to produce v3.\n\nRULES:\n- Apply form data updates cleanly\n- Flag any CONFLICTS where form data contradicts v2 config\n- Never invent values\n- Build full change_log showing every update\n- Return ONLY valid JSON no markdown no extra text\n\nReturn this exact JSON structure:\n{\n  \"version\": \"v3\",\n  \"source\": \"onboarding_form\",\n  \"generated_at\": \"\",\n  \"client_name\": \"\",\n  \"business_hours\": \"\",\n  \"timezone\": \"\",\n  \"main_transfer_number\": \"\",\n  \"after_hours_transfer_number\": \"\",\n  \"emergency_definition\": \"\",\n  \"servicetrade_rules\": [],\n  \"special_routing_rules\": [],\n  \"conflicts_detected\": [],\n  \"change_log\": [],\n  \"agent_prompt_v3\": \"\"\n}\n\nEXISTING V2 CONFIG:\n\n={{ $json.data1 }}\nFORM DATA SUBMITTED:\n={{ JSON.stringify($('Webhook').first().json.body) }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1360,
+        -48
+      ],
+      "id": "9dd53075-97ba-4ddf-b2ef-03660ec5758c",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "HqVZMHwLvqGPNMoJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "binaryPropertyName": "data4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1712,
+        -48
+      ],
+      "id": "66de2683-ba18-4dfa-ab52-8a226d6dc2fd",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "C:\\Users\\kanam\\.n8n-files\\data\\agents\\agent_v3.json",
+        "dataPropertyName": "data4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1920,
+        -48
+      ],
+      "id": "e91c4bbd-38d8-4d05-b3fc-f67d985f5e79",
+      "name": "Read/Write Files from Disk1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Review this v3 agent config and provide a conflict analysis report.\n\nReturn ONLY valid JSON no markdown:\n{\n  \"conflict_report_generated_at\": \"\",\n  \"client_name\": \"\",\n  \"total_conflicts\": 0,\n  \"conflicts\": [],\n  \"auto_resolved\": [],\n  \"requires_manual_review\": [],\n  \"overall_status\": \"clean or has_conflicts\"\n}\n\nV3 CONFIG:\n={{ JSON.stringify($input.first().json) }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        2128,
+        -48
+      ],
+      "id": "f4624862-bd88-4752-9299-662c0219b791",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "U30wZh9zDlZQQ0eN",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "binaryPropertyName": "data5",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2480,
+        -48
+      ],
+      "id": "ec977935-b226-419a-95a2-29cd73ee22d7",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "C:\\Users\\kanam\\.n8n-files\\data\\logs\\conflict_report.json",
+        "dataPropertyName": "data5",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        2688,
+        -48
+      ],
+      "id": "5033106a-4c8c-4adf-830f-08e0872730f3",
+      "name": "Read/Write Files from Disk2"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"success\",\n  \"message\": \"Form data processed successfully\",\n  \"version\": \"v3\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2896,
+        -48
+      ],
+      "id": "3af605f5-e9da-437c-8bd4-1ee31c88c8f6",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk1": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "7edc4f2b-b5e3-4a1a-9818-773f8686f3a0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bd364f7974a35e6c4aae013731a4bedc6ba6fea18d7e881c15631e509816e00c"
+  },
+  "id": "hea3tcVmKZJ9TgVMNmvFF",
+  "tags": []
+}

@@ -1,0 +1,202 @@
+{
+  "name": "clara-phase-2-democall",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a0a1bf41-024c-447f-848f-d19384cf77f9",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fileSelector": "C:\\Users\\kanam\\.n8n-files\\data\\transcripts\\demo_transcript.txt",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "927ca046-9e76-46d8-809a-fc11ee11514a",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "93a0351c-814a-4111-a033-a642261c971c",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=\nYou are an AI that extracts configuration from demo call transcripts for Clara, an AI voice agent for service trade businesses.\n\nRULES:\n- Only extract what is EXPLICITLY stated in the transcript\n- Never invent or assume missing details\n- Mark anything not mentioned as UNKNOWN\n- List ALL missing fields in questions_or_unknowns\n- Return ONLY valid JSON no markdown no extra text\n\nReturn this exact JSON structure:\n{\n  \"version\": \"v1\",\n  \"source\": \"demo_call\",\n  \"generated_at\": \"2024-01-15\",\n  \"client_name\": \"\",\n  \"location\": \"\",\n  \"service_types\": [],\n  \"business_hours\": \"UNKNOWN\",\n  \"timezone\": \"UNKNOWN\",\n  \"main_transfer_number\": \"UNKNOWN\",\n  \"after_hours_transfer_number\": \"UNKNOWN\",\n  \"transfer_timeout_seconds\": \"UNKNOWN\",\n  \"emergency_definition\": \"\",\n  \"non_emergency_examples\": [],\n  \"servicetrade_rules\": [],\n  \"fallback_action\": \"UNKNOWN\",\n  \"fallback_sms_number\": \"UNKNOWN\",\n  \"special_routing_rules\": [],\n  \"special_constraints\": [],\n  \"questions_or_unknowns\": [],\n  \"agent_prompt_v1\": \"\"\n}\n\nFor agent_prompt_v1 write a full Retell voice agent prompt with these two flows:\n\nBUSINESS HOURS FLOW:\n1. Greeting\n2. Ask purpose of call\n3. Collect caller name and phone number\n4. Transfer to main number\n5. If transfer fails apologize and assure callback\n6. Ask if they need anything else\n7. Close call\n\nAFTER HOURS FLOW:\n1. Greeting\n2. Ask purpose of call\n3. Ask if it is an emergency\n4. If YES emergency collect name number address immediately then attempt transfer\n5. If transfer fails apologize and assure technician calls back\n6. If NOT emergency collect details and confirm follow-up next business day\n7. Ask if they need anything else\n8. Close call\n\nTRANSCRIPT:\n{{ $json.data }}\n\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "3521b265-2088-4da4-b366-957126833ec9",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "HqVZMHwLvqGPNMoJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\n\n// Correct path based on actual Gemini response structure\nlet text = response.content.parts[0].text;\n\n// Clean markdown fences\ntext = text.replace(/```json|```/g, '').trim();\n\n// Parse JSON\nconst parsed = JSON.parse(text);\n\nreturn [{ json: parsed }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        0
+      ],
+      "id": "09e66e87-668d-4df5-b60b-2ff6615434fd",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "binaryPropertyName": "data1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1184,
+        0
+      ],
+      "id": "5cd7aaa0-44a3-4cc6-9b95-b0d1c21b142c",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "C:\\Users\\kanam\\.n8n-files\\data\\agents\\agent_v1.json",
+        "dataPropertyName": "data1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1392,
+        0
+      ],
+      "id": "a21c4d32-3296-4484-9460-5198a3b16274",
+      "name": "Read/Write Files from Disk1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "b549aee7-2459-401c-8030-5db0d63c2e19",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bd364f7974a35e6c4aae013731a4bedc6ba6fea18d7e881c15631e509816e00c"
+  },
+  "id": "4934vYwfsSw7hQz8hSNrP",
+  "tags": []
+}

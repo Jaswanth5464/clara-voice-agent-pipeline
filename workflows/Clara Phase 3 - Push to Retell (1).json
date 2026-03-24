@@ -1,0 +1,313 @@
+{
+  "name": "Clara Phase 3 - Push to Retell",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "bbd7fb44-472b-483a-aa91-59a596a0eaed",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fileSelector": "C:\\Users\\kanam\\.n8n-files\\data\\agents\\agent_v1.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "0d0dbc9c-b1d6-4253-ba31-9974aabaaa66",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "destinationKey": "data1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "d4d4b713-ec6b-4763-b279-21100cbd15b1",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nlet text = item.json.data1;\n\n// Parse outer JSON string\nconst outer = JSON.parse(text);\n\n// It's an array - get first item, navigate to text\nconst rawText = outer[0].content.parts[0].text;\n\n// Clean markdown fences\nconst clean = rawText.replace(/```json|```/g, '').trim();\n\n// Parse the actual agent JSON\nconst v2 = JSON.parse(clean);\n\nreturn [{ json: v2 }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "1268457b-3751-4bad-a772-df258b33e13b",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.retellai.com/create-agent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"agent_name\": \"{{ $('Code in JavaScript').item.json.client_name }}- Clara\",\n  \"voice_id\": \"11labs-Adrian\",\n  \"response_engine\": {\n    \"type\": \"retell-llm\",\n    \"llm_id\": \"{{ $json.llm_id }}\"\n  },\n  \"language\": \"en-US\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1136,
+        0
+      ],
+      "id": "aeb25823-7708-4c8e-a4e3-365623a89fb6",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "wd3BnfGcEL5eeAt1",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.retellai.com/create-retell-llm",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "gpt-4o"
+            },
+            {
+              "name": "begin_message",
+              "value": "Hi, this is Clara from ABC Fire Protection. How can I help you today?"
+            },
+            {
+              "name": "general_prompt",
+              "value": "={{ $json.agent_prompt_v2 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        880,
+        0
+      ],
+      "id": "b98710bc-0ce5-4c72-9fa3-b3e9122d3084",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "wd3BnfGcEL5eeAt1",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://api.retellai.com/update-retell-llm/{{ $json.response_engine.llm_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "general_prompt",
+              "value": "={{ $('HTTP Request1').item.json.general_prompt }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1344,
+        0
+      ],
+      "id": "15761813-2c87-44cf-870d-029c23215c48",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "wd3BnfGcEL5eeAt1",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const agentResponse = $('HTTP Request').first().json;\nconst llmResponse = $('HTTP Request1').first().json;\nconst v2 = $('Code in JavaScript').first().json;\n\nconst log = {\n  pushed_at: new Date().toISOString(),\n  workflow: 'Phase 3 - Push to Retell',\n  client: v2.client_name,\n  agent_id: agentResponse.agent_id,\n  llm_id: agentResponse.response_engine.llm_id,\n  agent_name: agentResponse.agent_name,\n  status: 'SUCCESS'\n};\n\nreturn [{ json: log }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        0
+      ],
+      "id": "aeedeae4-3dac-4ae4-92df-e1c11eebd2f1",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "binaryPropertyName": "dataatcodepart",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1760,
+        0
+      ],
+      "id": "2b7a1e8a-fff2-4ed8-a4dc-b4e7f55253e2",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "C:\\Users\\kanam\\.n8n-files\\data\\logs\\processing_log.json",
+        "dataPropertyName": "dataatcodepart",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1968,
+        0
+      ],
+      "id": "74c60ef5-550b-49e4-aa89-525c882b4ff0",
+      "name": "Read/Write Files from Disk1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "2f65b0fe-64a2-4490-bc58-e7e26d739ad9",
+  "meta": {
+    "instanceId": "bd364f7974a35e6c4aae013731a4bedc6ba6fea18d7e881c15631e509816e00c"
+  },
+  "id": "ejk_-3GO1uq0Y3GUia0cK",
+  "tags": []
+}

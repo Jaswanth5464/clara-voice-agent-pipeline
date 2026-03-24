@@ -1,0 +1,357 @@
+{
+  "name": "Clara Phase 2 - Onboarding to V2",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        0
+      ],
+      "id": "7c344ed8-1499-4c5d-b705-9ec29b649d9e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fileSelector": "C:\\Users\\kanam\\.n8n-files\\data\\transcripts\\onboarding_transcript.txt",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        128,
+        0
+      ],
+      "id": "57b59feb-b551-4e1b-b208-c7412d841a73",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        336,
+        0
+      ],
+      "id": "34aec131-1c61-4298-b7bd-e590ce17c028",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "fileSelector": "C:\\Users\\kanam\\.n8n-files\\data\\agents\\agent_v1.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        688,
+        -160
+      ],
+      "id": "c9118631-1994-4971-9a70-d3d2fd2c2a45",
+      "name": "Read/Write Files from Disk1"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "destinationKey": "data2",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        912,
+        -160
+      ],
+      "id": "a89a1690-1e59-453b-b7c6-83fd1b86ca29",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        784,
+        144
+      ],
+      "id": "5626a94f-e566-4246-8011-f7d15a9a1871",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are updating Clara AI voice agent config from v1 to v2 using confirmed onboarding data.\n\nRULES:\n- Only update fields EXPLICITLY confirmed in onboarding transcript\n- Never overwrite unrelated fields\n- Never invent values\n- Build detailed change_log for every changed field\n- Remove items from questions_or_unknowns only if resolved\n- Return ONLY valid JSON no markdown no extra text\n\nReturn this exact JSON:\n{\n  \"version\": \"v2\",\n  \"source\": \"onboarding_call\",\n  \"generated_at\": \"2024-01-22\",\n  \"client_name\": \"\",\n  \"location\": \"\",\n  \"service_types\": [],\n  \"business_hours\": \"\",\n  \"timezone\": \"\",\n  \"main_transfer_number\": \"\",\n  \"after_hours_transfer_number\": \"\",\n  \"transfer_timeout_seconds\": 0,\n  \"emergency_definition\": \"\",\n  \"non_emergency_examples\": [],\n  \"servicetrade_rules\": [],\n  \"fallback_action\": \"\",\n  \"fallback_sms_number\": \"\",\n  \"special_routing_rules\": [],\n  \"special_constraints\": [],\n  \"questions_or_unknowns\": [],\n  \"change_log\": [\n    {\n      \"field\": \"\",\n      \"old_value\": \"\",\n      \"new_value\": \"\",\n      \"source\": \"onboarding_call\",\n      \"reason\": \"\"\n    }\n  ],\n  \"agent_prompt_v2\": \"\"\n}\n\nFor agent_prompt_v2 write complete Retell voice agent prompt with ALL confirmed details.\n\nBUSINESS HOURS: Monday to Friday 7:30 AM to 5:30 PM Central Time\nMAIN NUMBER: 214-555-0147\nAFTER HOURS DISPATCH: 214-555-0198\nTRANSFER TIMEOUT: 60 seconds\nFALLBACK SMS: 214-555-0199\nINSPECTION TEAM: 214-555-0155\n\nBUSINESS HOURS FLOW:\n1. Greeting - Hi this is Clara from ABC Fire Protection how can I help you\n2. Ask purpose of call\n3. Collect caller name and phone number\n4. Transfer to 214-555-0147\n5. If transfer fails after 60 seconds apologize and assure callback\n6. Ask if they need anything else\n7. Close call\n\nAFTER HOURS FLOW:\n1. Greeting - You have reached ABC Fire Protection after hours\n2. Ask purpose of call\n3. Is this an emergency\n4. If YES - collect name number address - transfer to 214-555-0198 - if fails tell caller technician calls back in 15 minutes\n5. If NO - collect details - confirm follow-up next business day\n6. Ask if they need anything else\n7. Close call\n\nEXISTING V1 CONFIG:\n{{ $json.data2 }}\n\nONBOARDING TRANSCRIPT:\n{{ $('Extract from File').item.json.data }}\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1024,
+        144
+      ],
+      "id": "30dd08db-734b-41ce-bc00-bd03ed4c4e49",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JEtxclKFux8gp95D",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "C:\\Users\\kanam\\.n8n-files\\data\\agents\\agent_v1.json",
+        "dataPropertyName": "data4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1696,
+        112
+      ],
+      "id": "270915aa-cbf4-4724-ad18-35b7de358fa2",
+      "name": "Read/Write Files from Disk2"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "binaryPropertyName": "data4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1424,
+        128
+      ],
+      "id": "e2602779-5c49-408a-a1a5-77a0735cbcd4",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a change log generator for Clara AI voice agent configurations.\n\nCompare the V1 config and V2 config below and generate a detailed change log.\n\nRULES:\n- List every single field that changed from v1 to v2\n- List every field that was UNKNOWN in v1 and is now confirmed in v2\n- List any fields still UNKNOWN\n- List any new fields added in v2\n- Return ONLY valid JSON no markdown no extra text\n\nReturn this exact JSON structure:\n{\n  \"change_log_generated_at\": \"\",\n  \"client_name\": \"\",\n  \"version_from\": \"v1\",\n  \"version_to\": \"v2\",\n  \"total_changes\": 0,\n  \"total_resolved\": 0,\n  \"total_still_unknown\": 0,\n  \"changes\": [],\n  \"resolved_unknowns\": [],\n  \"still_unknown\": [],\n  \"new_fields_added\": [],\n  \"summary\": \"\"\n}\n\nV1 CONFIG:\n={{ $('Extract from File1').item.json.data2 }}\n\nV2 CONFIG:\n={{ JSON.stringify($('Merge').first().json) }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1888,
+        128
+      ],
+      "id": "8b8e466c-3a79-46ac-994c-669ba5ac9a1d",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JEtxclKFux8gp95D",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "binaryPropertyName": "data6",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2272,
+        128
+      ],
+      "id": "3d2b5f2c-2f02-4575-82c2-5e48d19856a6",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "C:\\Users\\kanam\\.n8n-files\\data\\logs\\change_log.json",
+        "dataPropertyName": "data6",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        2528,
+        112
+      ],
+      "id": "73ea71f0-08a5-45c9-b33a-67cbc5ff92d7",
+      "name": "Read/Write Files from Disk3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk2": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "b7d0a2b0-9818-4194-9d96-171c1e3a16bb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bd364f7974a35e6c4aae013731a4bedc6ba6fea18d7e881c15631e509816e00c"
+  },
+  "id": "rGyiTW_zbzoBWdUvAYb2i",
+  "tags": []
+}
