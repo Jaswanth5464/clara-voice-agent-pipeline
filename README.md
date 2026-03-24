@@ -1,559 +1,403 @@
-# 🎙️ Clara Answers — Onboarding Automation Pipeline
+# clara-voice-agent-pipeline
 
-> An end-to-end automation pipeline that converts raw call transcripts into production-ready AI voice agent configurations for Clara Answers — a voice agent platform serving fire protection, sprinkler, electrical, HVAC, and facility management companies.
-
----
-
-
-VideoLink:
-https://drive.google.com/file/d/1ScQcM9VPlkAut_LGgtUtQH6WcKYyds8N/view?usp=sharing
-
-
-
-## 📸 Screenshots
-
-
+**Author:** jaswanth.kanamarlapudi  
+**Built with:** n8n · Gemini AI · Retell AI  
+**Version:** 1.0.0
 
 ---
 
-### 1. Dashboard — Full Overview
+## Overview
 
-<img width="1130" height="592" alt="image" src="https://github.com/user-attachments/assets/d22f29df-5138-4651-80f9-af0121f5bc97" />
+`clara-voice-agent-pipeline` is a fully automated n8n pipeline that transforms raw call transcripts into a live, deployed AI voice agent called **Clara** on Retell AI — with no manual prompt writing required.
 
+The pipeline takes call recordings/transcripts from demo and onboarding calls, extracts all the important business rules and routing logic using Gemini AI, builds a structured agent config, and deploys it directly to Retell AI as a working voice agent.
 
+It also supports ongoing updates — when a client submits a new onboarding form, the pipeline automatically merges the new data with the existing config, detects conflicts, and generates an updated V3 agent config.
 
-
+> **Screenshot — Project Overview**  
+><img width="873" height="301" alt="image" src="https://github.com/user-attachments/assets/eebd8193-c4c2-43a0-95c2-53755ab043ec" />
 
 
 
 ---
 
-### 2. Dashboard — Pipeline Summary + Open Unknowns
+## Problem it Solves
 
+Setting up an AI voice agent manually requires:
+- Reading through long call transcripts
+- Writing detailed prompts by hand
+- Manually entering business rules, phone numbers, routing logic
+- Re-doing everything when client info changes
 
-
-
-
-
-
-<img width="1288" height="565" alt="image" src="https://github.com/user-attachments/assets/35950489-3d9b-45b6-ac6a-aaedea39cec0" />
-
----
-
-### 3. Dashboard — Diff Viewer
-
-<img width="805" height="517" alt="image" src="https://github.com/user-attachments/assets/95a105f7-d4f4-437f-b3d2-aa41dcab493e" />
+This pipeline **automates all of that** — just provide the transcript and the pipeline does the rest.
 
 ---
 
-### 4. n8n Pipeline A 
-
-<img width="1298" height="478" alt="image" src="https://github.com/user-attachments/assets/7d0c1726-2d54-4b04-aa7c-1901617282f3" />
-
-
----
-
-### 5. n8n Pipeline B 
-
-<img width="1255" height="410" alt="image" src="https://github.com/user-attachments/assets/77b40d22-c406-457e-b93b-dd5ca7ab2699" />
-
----
-
-### 6. Batch Runner — Terminal Output
-
-
-<img width="790" height="462" alt="image" src="https://github.com/user-attachments/assets/a1aa482a-bc5e-4050-855f-56958e2d96cf" />
-
-
-<img width="794" height="403" alt="image" src="https://github.com/user-attachments/assets/faf85c96-97a3-4711-bac5-fc5bdff42016" />
-
-
----
-
-### 7. Output Folder Structure
-
-<img width="896" height="377" alt="image" src="https://github.com/user-attachments/assets/5248ebcf-5982-4a71-9dc7-0dd9091b3cf1" />
-
-
-
-
-<img width="947" height="344" alt="image" src="https://github.com/user-attachments/assets/06e58b0b-d187-4ef4-aed9-96ac7bbff592" />
-
-
-
-
-<img width="827" height="345" alt="image" src="https://github.com/user-attachments/assets/069e3960-49ed-4a00-838b-8e9b5f6f9160" />
-
-
-
-
-
-<img width="1055" height="300" alt="image" src="https://github.com/user-attachments/assets/07565c69-fc5e-4cce-8404-058a94b7b8cd" />
-
-
-
----
-
-## 📌 What This Does
-
-This pipeline automates the entire Clara onboarding workflow:
+## Architecture
 
 ```
 Demo Call Transcript
         ↓
-Pipeline A (n8n + Gemini AI)
+   [ Phase 1 - Gemini AI ]
         ↓
-account_memo_v1.json + agent_spec_v1.json
+   agent_v1.json (initial config)
         ↓
 Onboarding Call Transcript
         ↓
-Pipeline B (n8n + Gemini AI)
+   [ Phase 2 - Gemini AI ]
         ↓
-account_memo_v2.json + agent_spec_v2.json + changelog.json
+   agent_v2.json (complete config)
+   change_log.json (what changed)
         ↓
-Live Dashboard (real-time visibility)
-```
-
-No manual configuration. No hallucinated data. Every missing field is explicitly flagged.
-
----
-
-## 🏗️ Architecture
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                  INPUT LAYER                            │
-│   demo_transcript.txt   onboarding_transcript.txt       │
-└────────────────┬───────────────────┬────────────────────┘
-                 │                   │
-        Pipeline A               Pipeline B
-                 │                   │
-┌────────────────▼───────────────────▼────────────────────┐
-│               n8n ORCHESTRATION LAYER                   │
-│                                                         │
-│  [Read File] → [Extract Text] → [Gemini AI]             │
-│       → [Format JSON] → [Write Files]                   │
-└────────────────────────────────┬────────────────────────┘
-                                 │
-┌────────────────────────────────▼────────────────────────┐
-│                  OUTPUT LAYER                           │
-│                                                         │
-│  outputs/accounts/<account_id>/                         │
-│    ├── v1/account_memo.json                             │
-│    ├── v1/agent_spec.json                               │
-│    ├── v2/account_memo.json                             │
-│    ├── v2/agent_spec.json                               │
-│    └── changelog/changelog.json                         │
-└────────────────────────────────┬────────────────────────┘
-                                 │
-┌────────────────────────────────▼────────────────────────┐
-│              DASHBOARD LAYER                            │
-│   Python server (server.py) reads JSON files            │
-│   dashboard.html displays live data                     │
-│   Diff viewer shows v1 → v2 changes                     │
-└─────────────────────────────────────────────────────────┘
+   [ Phase 3 - Retell API ]
+        ↓
+   Live Clara Voice Agent on Retell
+   processing_log.json
+        ↓
+Client Submits Onboarding Form
+        ↓
+   [ Phase 4 - Gemini AI ]
+        ↓
+   agent_v3.json (updated config)
+   conflict_report.json
 ```
 
 ---
 
-## 📁 Repository Structure
-
-```
-clara-answers-pipeline/
-│
-├── README.md                          ← You are here
-│
-├── workflows/
-│   ├── pipeline_a_demo.json           ← n8n Pipeline A export
-│   └── pipeline_b_onboarding.json     ← n8n Pipeline B export
-│
-├── scripts/
-│   ├── run_all.py                     ← Batch runner (all 5 accounts)
-│   └── server.py                      ← Dashboard data server
-│
-├── dashboard/
-│   └── dashboard.html                 ← Live pipeline dashboard
-│
-├── outputs/
-│   └── accounts/
-│       ├── account_001/
-│       │   ├── v1/
-│       │   │   ├── account_memo.json
-│       │   │   └── agent_spec.json
-│       │   ├── v2/
-│       │   │   ├── account_memo.json
-│       │   │   └── agent_spec.json
-│       │   └── changelog/
-│       │       └── changelog.json
-│       ├── account_002/  (same structure)
-│       ├── account_003/  (same structure)
-│       ├── account_004/  (same structure)
-│       └── account_005/  (same structure)
-│
-└── transcripts/
-    ├── demo/
-    │   ├── account_001_demo.txt
-    │   ├── account_002_demo.txt
-    │   ├── account_003_demo.txt
-    │   ├── account_004_demo.txt
-    │   └── account_005_demo.txt
-    └── onboarding/
-        ├── account_001_onboarding.txt
-        ├── account_002_onboarding.txt
-        ├── account_003_onboarding.txt
-        ├── account_004_onboarding.txt
-        └── account_005_onboarding.txt
-```
+## Workflows (4 Phases)
 
 ---
 
-## ⚙️ Setup Instructions
+### Phase 1 — Demo Transcript to V1 Config
 
-### Prerequisites
+**Workflow name:** `Clara Phase 1 - Demo to V1`  
+**Trigger:** Manual
+
+**What it does:**  
+Reads the demo call transcript and uses Gemini AI to extract an initial agent configuration. Fields not found in the demo call are marked as `UNKNOWN` for Phase 2 to fill in.
+
+> **Screenshot — Phase 1 Workflow**  
+<img width="1216" height="443" alt="image" src="https://github.com/user-attachments/assets/b8fbebbe-ced1-4b8c-85c4-2805866088d1" />
+
+> *Add a screenshot of the full Phase 1 workflow canvas in n8n*
+
+**Nodes:**
+| Node | Type | Purpose |
+|------|------|---------|
+| Manual Trigger | Trigger | Start the workflow |
+| Read Transcript | Read/Write Files | Read demo_transcript.txt |
+| Extract from File | Extract | Extract text content |
+| Gemini AI | AI | Generate V1 config JSON |
+| Convert to JSON | Convert | Convert output to file |
+| Write agent_v1.json | Read/Write Files | Save config to disk |
+
+**Input:**
+```
+data/transcripts/demo_transcript.txt
+```
+
+**Output:**
+```
+data/agents/agent_v1.json
+```
+
+> **Screenshot — Phase 1 Output**  
+<img width="1365" height="571" alt="image" src="https://github.com/user-attachments/assets/c277df56-d58f-48a5-9c30-37eaafc5f055" />
+  
+
+---
+
+### Phase 2 — Onboarding Transcript to V2 Config
+
+**Workflow name:** `Clara Phase 2 - Onboarding to V2`  
+**Trigger:** Manual
+
+**What it does:**  
+Reads the onboarding call transcript and the existing V1 config. Merges them and sends both to Gemini AI to generate a complete V2 config with all UNKNOWN fields filled in. Also generates a detailed change log.
+
+> **Screenshot — Phase 2 Workflow**  
+> <img width="1298" height="470" alt="image" src="https://github.com/user-attachments/assets/914df85b-63a2-4d5a-a15e-509bdbe9829d" />
+ 
+> *Add a screenshot of the full Phase 2 workflow canvas in n8n*
+
+**Nodes:**
+| Node | Type | Purpose |
+|------|------|---------|
+| Manual Trigger | Trigger | Start the workflow |
+| Read Transcript | Read/Write Files | Read onboarding_transcript.txt |
+| Extract Transcript | Extract | Extract transcript text |
+| Read agent_v1.json | Read/Write Files | Read existing V1 config |
+| Extract V1 | Extract | Extract V1 JSON text |
+| Merge | Merge | Combine transcript + V1 data |
+| Gemini V2 | AI | Generate complete V2 config |
+| Convert to JSON | Convert | Convert to file |
+| Write agent_v2.json | Read/Write Files | Save V2 config |
+| Gemini Change Log | AI | Generate detailed change log |
+| Convert to JSON | Convert | Convert to file |
+| Write change_log.json | Read/Write Files | Save change log |
+
+**Input:**
+```
+data/transcripts/onboarding_transcript.txt
+data/agents/agent_v1.json
+```
+
+**Output:**
+```
+data/agents/agent_v2.json
+data/logs/change_log.json
+```
+
+> **Screenshot — Phase 2 V2 Output**  
+><img width="631" height="541" alt="image" src="https://github.com/user-attachments/assets/284e40df-8fa3-4f40-9ffd-3cae3c08f3ed" />
+
+
+> **Screenshot — Change Log Output**  
+> <img width="738" height="552" alt="image" src="https://github.com/user-attachments/assets/403ef2a2-4abf-496e-9eed-f691c79197f0" />
+
+
+
+---
+
+### Phase 3 — Push to Retell AI
+
+**Workflow name:** `Clara Phase 3 - Push to Retell`  
+**Trigger:** Manual
+
+**What it does:**  
+Takes the complete V2 config and deploys it to Retell AI. Creates a Retell LLM with the full Clara prompt, then creates the Retell Agent with the correct voice and language settings.
+
+> **Screenshot — Phase 3 Workflow**  
+<img width="1338" height="407" alt="image" src="https://github.com/user-attachments/assets/fac5cc2d-d0d7-491c-b400-de7b691db709" />
+
+> *Add a screenshot of the full Phase 3 workflow canvas in n8n*
+<img width="1305" height="264" alt="image" src="https://github.com/user-attachments/assets/4bc42a9d-ecf1-4642-b87d-c2449d232040" />
+
+**Nodes:**
+| Node | Type | Purpose |
+|------|------|---------|
+| Manual Trigger | Trigger | Start the workflow |
+| Read agent_v2.json | Read/Write Files | Read V2 config |
+| Extract from File | Extract | Extract JSON text |
+| Parse V2 | Code | Parse the agent config |
+| Create Retell LLM | HTTP Request (POST) | Create LLM on Retell |
+| Update LLM Prompt | HTTP Request (PATCH) | Push full prompt to LLM |
+| Save Log | Code | Build processing log |
+| Convert to JSON | Convert | Convert log to file |
+| Write processing_log.json | Read/Write Files | Save log to disk |
+
+**Retell API calls:**
+| Call | Method | Endpoint |
+|------|--------|---------|
+| Create LLM | POST | `https://api.retellai.com/create-retell-llm` |
+| Create Agent | POST | `https://api.retellai.com/create-agent` |
+| Update Prompt | PATCH | `https://api.retellai.com/update-retell-llm/{llm_id}` |
+
+**Deployed agent details:**
+```
+Agent Name:  ABC Fire Protection Services - Clara
+Agent ID:    agent_c8db37afdedaf2f3f5e93ec21b
+LLM ID:      llm_814e3922270b9029ef6ac68052da
+Voice:       11labs-Adrian
+Language:    en-US
+Model:       gpt-4o
+```
+
+> **Screenshot — Retell Dashboard**  
+<img width="1329" height="543" alt="image" src="https://github.com/user-attachments/assets/d4b4bacb-b3aa-418e-9714-b4cfa25dd344" />
+
+> *Add a screenshot of Clara agent appearing in Retell AI dashboard*
+
+> **Screenshot — Retell LLM Prompt**  
+> <img width="692" height="558" alt="image" src="https://github.com/user-attachments/assets/f7dbf52e-7b27-48cf-ae52-d8fe5151458f" />
+
+> *Add a screenshot of the LLM prompt loaded in Retell AI*
+
+> **Screenshot — Phase 3 Processing Log**  
+> <img width="407" height="589" alt="image" src="https://github.com/user-attachments/assets/8ea778c5-8076-478a-9a71-522707d9ba97" />
+
+
+---
+
+### Phase 4 — Onboarding Form to V3 Config
+
+**Workflow name:** `Clara Phase 4 - Form Merge to V3`  
+**Trigger:** Webhook (POST)
+
+**What it does:**  
+Listens for form submissions via webhook. Gemini AI merges new form data with existing V2 config to produce V3. Also runs a conflict check and generates a conflict report.
+
+> **Screenshot — Phase 4 Workflow**  
+> <img width="1281" height="329" alt="image" src="https://github.com/user-attachments/assets/443fb303-619f-48d3-a284-9e77a3962f88" />
+
+> *Add a screenshot of the full Phase 4 workflow canvas in n8n*
+
+**Nodes:**
+| Node | Type | Purpose |
+|------|------|---------|
+| Webhook | Webhook | Receive form submission |
+| Read agent_v2.json | Read/Write Files | Read existing V2 config |
+| Extract from File | Extract | Extract V2 JSON |
+| Parse V2 for Merge | Code | Parse V2 config |
+| Merge | Merge | Combine form data + V2 |
+| Gemini Merge V3 | AI | Generate V3 config |
+| Convert to JSON | Convert | Convert to file |
+| Write agent_v3.json | Read/Write Files | Save V3 config |
+| Gemini Conflict Check | AI | Detect conflicts |
+| Convert to JSON | Convert | Convert to file |
+| Write conflict_report.json | Read/Write Files | Save conflict report |
+| Respond to Webhook | Respond | Send success response |
+
+**Input:**
+```
+POST http://localhost:5678/webhook/clara-form-submit
+Body: { "business_hours": "...", "main_transfer_number": "...", ... }
+```
+
+**Output:**
+```
+data/agents/agent_v3.json
+data/logs/conflict_report.json
+```
+
+
+---
+
+## Complete File Structure
+
+```
+C:\Users\kanam\.n8n-files\
+└── data\
+    ├── transcripts\
+    │   ├── demo_transcript.txt          ← Input for Phase 1
+    │   └── onboarding_transcript.txt    ← Input for Phase 2
+    ├── agents\
+    │   ├── agent_v1.json                ← Output of Phase 1
+    │   ├── agent_v2.json                ← Output of Phase 2
+    │   └── agent_v3.json                ← Output of Phase 4
+    └── logs\
+        ├── change_log.json              ← Output of Phase 2
+        ├── processing_log.json          ← Output of Phase 3
+        └── conflict_report.json         ← Output of Phase 4
+```
+
+> **Screenshot — File Structure**  
+<img width="409" height="400" alt="image" src="https://github.com/user-attachments/assets/97908a78-9fc9-4db3-93f6-1203bb354c35" />
+
+> *Add a screenshot of the data folder structure in Windows Explorer*
+
+---
+
+## Tech Stack
 
 | Tool | Version | Purpose |
 |------|---------|---------|
-| n8n | 2.3.2+ | Workflow orchestration |
-| Python | 3.8+ | Batch runner + dashboard server |
-| Gemini API | Free tier | AI extraction + generation |
-| Node.js | 18+ | Required by n8n |
+| n8n | 2.3.2 (Self Hosted) | Workflow automation engine |
+| Gemini AI | gemini-2.5-flash | AI config generation and analysis |
+| Retell AI | v1 API | Voice agent deployment platform |
+| ElevenLabs | 11labs-Adrian | Voice for Clara |
+| GPT-4o | via Retell | LLM powering Clara's responses |
 
 ---
 
-### Step 1 — Clone the Repository
+## Agent Config Fields
 
-```bash
-git clone https://github.comJaswanth5464/clara-answers-pipeline.git
-cd clara-answers-pipeline
-```
+| Field | Description |
+|-------|-------------|
+| `version` | Config version (v1 / v2 / v3) |
+| `source` | Where data came from |
+| `client_name` | Name of the client business |
+| `location` | Client location |
+| `service_types` | Types of services offered |
+| `business_hours` | Operating hours |
+| `timezone` | Client timezone |
+| `main_transfer_number` | Business hours transfer number |
+| `after_hours_transfer_number` | After hours emergency number |
+| `transfer_timeout_seconds` | How long to wait before transfer fails |
+| `emergency_definition` | What counts as an emergency |
+| `non_emergency_examples` | Examples of non-emergency calls |
+| `servicetrade_rules` | Rules for ServiceTrade integration |
+| `fallback_action` | What to do when transfer fails |
+| `fallback_sms_number` | SMS number for failed transfer alerts |
+| `special_routing_rules` | Special call routing rules |
+| `special_constraints` | Any special restrictions |
+| `questions_or_unknowns` | Fields still needing clarification |
+| `agent_prompt_v2` | Full Clara prompt for the agent |
 
 ---
 
-### Step 2 — Set Up n8n (Local)
+## How to Run
 
-```bash
-# Install n8n globally
-npm install -g n8n
+### Prerequisites
+- n8n installed and running on `http://localhost:5678`
+- Gemini API key configured in n8n credentials
+- Retell AI API key configured in n8n Header Auth credentials
+- Transcripts placed in correct folder
 
-# Start n8n
-n8n start
+### Step by Step
 
-# Open in browser
-http://localhost:5678
-```
+**Step 1 — Run Phase 1**
+1. Open `Clara Phase 1 - Demo to V1` workflow
+2. Click Execute Workflow
+3. Check `data/agents/agent_v1.json` was created
 
----
+**Step 2 — Run Phase 2**
+1. Open `Clara Phase 2 - Onboarding to V2` workflow
+2. Click Execute Workflow
+3. Check `data/agents/agent_v2.json` was created
+4. Check `data/logs/change_log.json` was created
 
-### Step 3 — Configure n8n File Access
+**Step 3 — Run Phase 3**
+1. Open `Clara Phase 3 - Push to Retell` workflow
+2. Click Execute Workflow
+3. Check Retell dashboard — Clara agent should appear
+4. Check `data/logs/processing_log.json` was created
 
-n8n only allows file access from its designated folder. Copy all files there:
-
-**Windows:**
+**Step 4 — Test Phase 4**
+1. Open `Clara Phase 4 - Form Merge to V3` workflow
+2. Click Listen for test event on Webhook node
+3. Run this in PowerShell:
 ```powershell
-# Create required folders
-mkdir C:\Users\<your-username>\.n8n-files\transcripts\demo
-mkdir C:\Users\<your-username>\.n8n-files\transcripts\onboarding
-mkdir C:\Users\<your-username>\.n8n-files\outputs\accounts\account_001\v1
-mkdir C:\Users\<your-username>\.n8n-files\outputs\accounts\account_001\v2
-mkdir C:\Users\<your-username>\.n8n-files\outputs\accounts\account_001\changelog
-# Repeat for accounts 002-005
-
-# Copy transcripts
-copy transcripts\demo\* C:\Users\<your-username>\.n8n-files\transcripts\demo\
-copy transcripts\onboarding\* C:\Users\<your-username>\.n8n-files\transcripts\onboarding\
+Invoke-WebRequest -Uri "http://localhost:5678/webhook-test/clara-form-submit" -Method POST -ContentType "application/json" -Body '{"business_hours": "Monday to Friday 8am to 6pm", "main_transfer_number": "214-555-9999"}'
 ```
+4. Check `data/agents/agent_v3.json` was created
+5. Check `data/logs/conflict_report.json` was created
 
 ---
 
-### Step 4 — Import n8n Workflows
+## Clara Agent Behavior
 
-```
-1. Open n8n → http://localhost:5678
-2. Click "+" → New Workflow
-3. Click "..." top right → Import
-4. Select workflows/pipeline_a_demo.json
-5. Update file paths to match your username
-6. Repeat for pipeline_b_onboarding.json
-```
+**During Business Hours (Mon-Fri 7:30 AM - 5:30 PM CT):**
+1. Greets caller: "Hi, this is Clara from ABC Fire Protection, how can I help you?"
+2. Collects caller name and phone number
+3. Fire alarm inspection calls → transfers to 214-555-0155
+4. All other calls → transfers to 214-555-0147
+5. Transfer fails after 60 seconds → apologizes and assures callback
 
----
-
-### Step 5 — Set Up Gemini API Key
-
-```
-1. Go to https://aistudio.google.com/app/apikey
-2. Create a free API key
-3. In n8n → Credentials → Add Google Gemini(PaLM) API
-4. Paste your API key
-5. Save
-```
+**After Hours:**
+1. Greets caller: "You have reached ABC Fire Protection after hours."
+2. Asks if call is an emergency
+3. Emergency → collects name, phone, address → transfers to 214-555-0198
+4. Emergency transfer fails → apologizes, assures 15 min callback, sends SMS to 214-555-0199
+5. Non-emergency → collects details → confirms next business day callback
 
 ---
 
-### Step 6 — Install Python Dependencies
+## Common Issues & Fixes
 
-```bash
-pip install requests
-```
-
----
-
-## 🚀 How to Run
-
-### Option A — Run Single Account via n8n (Visual)
-
-```
-1. Open Pipeline A in n8n
-2. Click "Execute Workflow"
-3. Opens Pipeline B
-4. Click "Execute Workflow"
-```
-
-### Option B — Run All 5 Accounts via Batch Script
-
-```bash
-python scripts/run_all.py --api-key YOUR_GEMINI_API_KEY
-```
-
-**Additional options:**
-```bash
-# Run only Pipeline A (demo → v1)
-python scripts/run_all.py --api-key YOUR_KEY --pipeline a
-
-# Run only Pipeline B (onboarding → v2)
-python scripts/run_all.py --api-key YOUR_KEY --pipeline b
-
-# Force reprocess even if files exist
-python scripts/run_all.py --api-key YOUR_KEY --force
-```
-
-**Expected output:**
-```
-🎙️ Clara Answers — Batch Pipeline Runner
-   Processing 5 accounts
-
-✅ account_001 Pipeline A complete!
-✅ account_002 Pipeline A complete!
-...
-
-📊 BATCH RUN SUMMARY
-─────────────────────────────────────
-Account         Pipeline A    Pipeline B
-account_001     ✅ Done       ✅ Done
-account_002     ✅ Done       ✅ Done
-account_003     ✅ Done       ✅ Done
-account_004     ✅ Done       ✅ Done
-account_005     ✅ Done       ✅ Done
-─────────────────────────────────────
-Pipeline A: 5/5 accounts processed
-Pipeline B: 5/5 accounts processed
-```
+| Issue | Cause | Fix |
+|-------|-------|-----|
+| Binary file read error | n8n stores files compressed | Add `destinationKey` in Extract from File node |
+| 404 on Retell API | Wrong URL format | Use `https://api.retellai.com/create-agent` (no /v2/) |
+| Invalid response engine | Wrong body format | Use `llm_websocket_url` instead of `response_engine` object |
+| JSON parse error | Special characters in prompt | Use Add Parameter fields instead of raw JSON body |
+| Webhook not registered | Webhook not listening | Click Listen for test event before POST request |
+| 2 items from Gemini | Merge node in Append mode | Add Code node before Gemini to combine into 1 item |
 
 ---
 
-## 📊 How to View the Dashboard
 
-### Step 1 — Start the data server
-```bash
-python scripts/server.py
-```
-
-### Step 2 — Open the dashboard
-```
-Open dashboard/dashboard.html in your browser
-```
-
-### Dashboard Features:
-- **Stats cards** — total accounts, v2 complete, pending, open unknowns
-- **Pipeline table** — all accounts with version, status, confidence score
-- **v1/v2 buttons** — view raw JSON memo for each version
-- **Diff button** — side-by-side changelog viewer (green = added, red = before)
-- **Open unknowns panel** — all missing fields flagged per account
-- **Pipeline summary** — total fields extracted, avg confidence, changelogs
 
 ---
 
-## 📋 Output Format
-
-### account_memo.json
-```json
-{
-  "account_id": "account_001",
-  "company_name": "Apex Fire Protection",
-  "version": "v1",
-  "source": "demo_call",
-  "business_hours": {
-    "confirmed": false,
-    "days": null,
-    "timezone": null,
-    "note": "NOT MENTIONED in demo call"
-  },
-  "emergency_definition": ["sprinkler leak", "fire alarm"],
-  "emergency_routing_rules": {
-    "primary_contact": {"name": null, "phone": null},
-    "fallback_contact": {"name": null, "phone": null}
-  },
-  "questions_or_unknowns": [
-    "Business hours not stated",
-    "Emergency contact number missing"
-  ]
-}
-```
-
-### agent_spec.json
-```json
-{
-  "agent_name": "Clara — Apex Fire Protection",
-  "version": "v1",
-  "voice_style": {"tone": "warm", "pace": "natural"},
-  "system_prompt": "You are Clara... [full script]",
-  "call_transfer_protocol": {...},
-  "fallback_protocol": {...}
-}
-```
-
-### changelog.json
-```json
-{
-  "from_version": "v1",
-  "to_version": "v2",
-  "summary": "6 fields confirmed during onboarding",
-  "changes": [
-    {
-      "field": "business_hours",
-      "change_type": "CONFIRMED",
-      "before": "UNKNOWN",
-      "after": "Mon-Fri 08:00-17:00 EST",
-      "reason": "Confirmed on onboarding call"
-    }
-  ],
-  "resolved_unknowns": ["Business hours confirmed"],
-  "remaining_unknowns": []
-}
-```
-
----
-
-## 🔄 Pipeline Flow Detail
-
-### Pipeline A — Demo Call → v1
-
-| Step | Node | Action |
-|------|------|--------|
-| 1 | Read File | Read demo transcript from disk |
-| 2 | Extract from File | Convert binary to text |
-| 3 | Gemini AI | Extract company info into structured JSON |
-| 4 | Code | Clean + format + add metadata |
-| 5 | Write File | Save account_memo.json |
-| 6 | Gemini AI | Generate Clara voice agent script |
-| 7 | Code | Clean + format agent spec |
-| 8 | Write File | Save agent_spec.json |
-
-### Pipeline B — Onboarding → v2 + Changelog
-
-| Step | Node | Action |
-|------|------|--------|
-| 1 | Read File | Read onboarding transcript |
-| 2 | Extract from File | Convert to text |
-| 3 | Read File | Read existing v1 memo |
-| 4 | Extract from File | Convert to text |
-| 5 | Gemini AI | Compare v1 + transcript → generate v2 + changelog |
-| 6 | Code | Split v2_memo and changelog, format both |
-| 7 | Write File | Save v2/account_memo.json |
-| 8 | Write File | Save changelog/changelog.json |
-| 9 | Write File | Save v2/agent_spec.json |
-
----
-
-## 🧠 Prompt Hygiene
-
-The generated agent prompt follows strict conversation hygiene:
-
-**Business Hours Flow:**
-1. Warm greeting with company name
-2. Ask purpose of call
-3. Collect caller name and phone number
-4. Transfer to appropriate contact
-5. If transfer fails → apologize and assure callback
-6. Ask if anything else needed
-7. Close call politely
-
-**After Hours Flow:**
-1. Greeting mentioning closed
-2. Ask purpose of call
-3. Confirm if emergency
-4. If emergency → collect name, number, address → transfer immediately
-5. If transfer fails → apologize, assure urgent callback
-6. If non-emergency → collect details, confirm next-day callback
-7. Ask if anything else needed
-8. Close call politely
-
-**Strict Rules Enforced:**
-- Never mention function calls or tools to caller
-- Never claim to be human or AI unless asked
-- Never invent contact details not in the memo
-- Sound warm, calm and professional at all times
-
----
-
-## ✅ Assignment Checklist
-
-| Requirement | Status |
-|-------------|--------|
-| Pipeline A — demo → v1 | ✅ Done |
-| Pipeline B — onboarding → v2 | ✅ Done |
-| account_memo.json per account | ✅ Done |
-| agent_spec.json per account | ✅ Done |
-| changelog.json per account | ✅ Done |
-| questions_or_unknowns handling | ✅ Done |
-| No hallucination of missing data | ✅ Done |
-| Versioning v1 → v2 | ✅ Done |
-| n8n workflow exports | ✅ Done |
-| Batch runner script | ✅ Done |
-| Idempotent (skip if exists) | ✅ Done |
-| Dashboard UI | ✅ Bonus |
-| Diff viewer | ✅ Bonus |
-| Confidence scores | ✅ Bonus |
-| Batch summary metrics | ✅ Bonus |
-
----
-
-## ⚠️ Known Limitations
-
-1. **n8n file access** — n8n only reads/writes from `~/.n8n-files/` on local setup. In production, replace with cloud storage (S3, Google Drive).
-
-2. **Gemini free tier** — Rate limits may slow batch processing. Add `time.sleep(2)` between calls if hitting limits.
-
-3. **Sample transcripts** — The 5 transcripts used are representative samples. Real production transcripts from actual demo calls will produce richer extractions.
-
-4. **Retell API** — Retell does not offer free programmatic agent creation. The `agent_spec.json` output is designed to be manually imported into Retell UI or used via their paid API in production.
-
-5. **Single file storage** — Outputs are stored as local JSON files. In production, replace with Supabase or PostgreSQL for multi-user access.
-
----
-
-## 🚀 What I Would Improve With Production Access
-
-1. **Retell API integration** — Auto-create and update agents via Retell API instead of manual import
-2. **Supabase backend** — Replace local JSON files with a proper database for multi-user, concurrent access
-3. **Webhook triggers** — Trigger pipelines automatically when new call recordings land in storage
-4. **Audio transcription** — Add Whisper transcription node so pipeline accepts raw audio files
-5. **Confidence thresholds** — Auto-flag accounts below 70% confidence for human review
-6. **Slack notifications** — Notify team when new account is onboarded or unknowns are detected
-7. **Retell agent testing** — Auto-test generated prompts against sample calls before deployment
-
----
-
-## 🎥 Demo Video
-
-[Watch the pipeline demo on Loom](https://drive.google.com/file/d/1ScQcM9VPlkAut_LGgtUtQH6WcKYyds8N/view?usp=sharing) ← 
-
----
-
-## 📞 Contact
-
-Built as part of Clara Answers Intern Assignment.
-
----
-
-*This pipeline is zero-cost. No paid APIs, subscriptions, or services were used.*
+*Built by jaswanth.kanamarlapudi*
